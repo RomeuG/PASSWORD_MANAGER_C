@@ -1,7 +1,22 @@
 #include <sqlite3.h>
+
 #include <stdio.h>
+#include <unistd.h>
+#include <stdbool.h>
 
 sqlite3 *db;
+
+bool sql3_db_exists(char *db_name)
+{
+	// struct stat   buffer;   
+  	// return (stat (filename, &buffer) == 0);
+
+	if (access(db_name, F_OK) != -1) {
+		return true;
+	}
+
+	return false;
+}
 
 // database open encapsulation
 int sql3_db_init(sqlite3 *_db, char *db_name) 
