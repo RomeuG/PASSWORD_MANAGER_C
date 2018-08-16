@@ -1,12 +1,8 @@
-#include <stdio.h>
+#include "encryption.h"
 
-#include <openssl/aes.h>
-
-#include "defines.h"
-
-uint8 _AES_CBC_encrypt(uint8 *message, uint8 *buffer_out, uint8 *key, uint8 *iv_enc)
+u8 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_enc)
 {
-    int8 res;
+    s8 res;
 
     AES_KEY encryption_key;
     res = AES_set_encrypt_key(key, AES_KEY_LENGTH * 8, &encryption_key);
@@ -21,9 +17,9 @@ uint8 _AES_CBC_encrypt(uint8 *message, uint8 *buffer_out, uint8 *key, uint8 *iv_
     return res;
 }
 
-uint8 _AES_CBC_decrypt(uint8 *message, uint8 *buffer_out, uint8 *key, uint8 *iv_dec)
+u8 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_dec)
 {
-    int8 res;
+    s8 res;
 
     AES_KEY decryption_key;
     res = AES_set_decrypt_key(key, AES_KEY_LENGTH * 8, &decryption_key);
