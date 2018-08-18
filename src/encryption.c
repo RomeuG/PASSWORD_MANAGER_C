@@ -1,6 +1,6 @@
 #include "encryption.h"
 
-u8 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_enc)
+u8 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv_enc)
 {
     s8 res;
 
@@ -12,12 +12,12 @@ u8 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_enc)
         return res;
     }
 
-    AES_cbc_encrypt(message, buffer_out, sizeof(message), &encryption_key, iv_enc, AES_ENCRYPT);
+    AES_cbc_encrypt(message, buffer_out, length, &encryption_key, iv_enc, AES_ENCRYPT);
 
     return res;
 }
 
-u8 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_dec)
+u8 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv_dec)
 {
     s8 res;
 
@@ -29,7 +29,7 @@ u8 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_dec)
         return res;
     }
 
-    AES_cbc_encrypt(message, buffer_out, sizeof(message), &decryption_key, iv_dec, AES_DECRYPT);
+    AES_cbc_encrypt(message, buffer_out, length, &decryption_key, iv_dec, AES_DECRYPT);
 
     return res;
 }
