@@ -1,8 +1,4 @@
-#include <sqlite3.h>
-
-#include <stdio.h>
-#include <unistd.h>
-#include <stdbool.h>
+#include "database.h"
 
 bool sql3_db_exists(char *db_name)
 {
@@ -26,4 +22,10 @@ int sql3_db_init(sqlite3 *_db, char *db_name)
 int sql3_db_close(sqlite3 *_db) 
 {
     return sqlite3_close_v2(_db);
+}
+
+int sql3_list_tables(sqlite3 *_db) 
+{
+	sqlite3_stmt *stmt;
+	return sqlite3_prepare_v2(_db, SQL_LIST_TABLES, -1, &stmt, NULL);
 }
