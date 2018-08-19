@@ -1,12 +1,49 @@
 #include "database.h"
 
-bool sql3_db_exists(char *db_name)
-{
-	// struct stat   buffer;   
-  	// return (stat (filename, &buffer) == 0);
+#include <dirent.h>
+#include <errno.h>
+#include <sys/stat.h>
 
-	if (access(db_name, F_OK) != -1) {
+#define DIR_DATABASE "passshelter"
+#define DIR_SEPARATOR "/"
+#define DIR_PERMISSIONS 0700
+
+int __mkdir(char *dir)
+{
+	return mkdir(dir, DIR_PERMISSIONS);
+}
+
+bool sql3_cfg_dir_exists(char *dir)
+{
+	DIR *_dir = opendir(dir);
+
+	if (_dir) {
 		return true;
+	}
+
+	return errno;
+}
+
+bool sql3_db_exists(char *dir, char *db_name)
+{
+  	char full_path[256];
+
+	// use safe versions of these functions
+	strcpy(full_path, dir);
+	strcat(full_path, DIR_SEPARATOR);
+	strcat(full_path, DIR_DATABASE);
+
+	// check if $HOME/.config/passshelter exists
+	if (!sql3_cfg_dir_exists(dir)) {
+		__mkdir(dir);
+	}
+
+	// concatenate db file name
+	strcat(full_path, DIR_SEPARATOR);
+	strcat(full_path, db_name);
+
+  	if (access(full_path, F_OK) != -1) {
+    	return true;
 	}
 
 	return false;
