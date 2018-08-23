@@ -21,10 +21,12 @@ bool sql3_cfg_dir_exists(char *dir)
 		return true;
 	}
 
-	return errno;
+	// TODO return errno instead of a boolean
+	return false;
 }
 
-bool sql3_db_exists(char *dir, char *db_name)
+// TODO function too big, creating two things in here is too much
+bool sql3_db_exists_create(char *dir, char *db_name)
 {
   	char full_path[256];
 
@@ -34,8 +36,11 @@ bool sql3_db_exists(char *dir, char *db_name)
 	strcat(full_path, DIR_DATABASE);
 
 	// check if $HOME/.config/passshelter exists
-	if (!sql3_cfg_dir_exists(dir)) {
-		__mkdir(dir);
+	if (!sql3_cfg_dir_exists(full_path)) {
+		if(__mkdir(full_path) != 0) {
+		    printf("Errno: %s\n", strerror(errno));
+            return false;
+		}
 	}
 
 	// concatenate db file name
