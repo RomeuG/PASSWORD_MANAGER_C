@@ -1,4 +1,5 @@
 #include "database.h"
+#include "utils.h"
 
 #include <dirent.h>
 #include <errno.h>
@@ -44,7 +45,7 @@ bool sql3_db_exists_create(char *dir, char *db_name)
 	// check if $HOME/.config/passshelter exists
 	if (!sql3_cfg_dir_exists(full_path)) {
 		if(__mkdir(full_path) != 0) {
-		    printf("Errno: %s\n", strerror(errno));
+		    DEBUG_PRINT("Errno - %d - %s\n", errno, strerror(errno));
             return false;
 		}
 	}

@@ -1,48 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
+#include <getopt.h>
 
 #include "defines.h"
 #include "base64.h"
 #include "encryption.h"
+#include "database.h"
+#include "utils.h"
+
+#define CONFIG_DIR "XDG_CONFIG_HOME"
+#define DATABASE_NAME "pass_shelter.db"
 
 int main(int argc, char** argv) 
 {
-    // char* database_name;
+    int copts;
+    char* config_dir = __getenv(CONFIG_DIR);
 
-    // if(argc != 2) {
-    //     _Exit(EXIT_FAILURE);
-    // }
+    if (!sql3_db_exists_create(config_dir, DATABASE_NAME)) {
+        DEBUG_PRINT("%s", "Problems creating database file...\nExiting...\n");
+        exit(EXIT_FAILURE);
+    }
 
-    // database_name = argv[1];
-
-    u8 key[AES_KEY_LENGTH] = {'t', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't'};
-    u8 iv[AES_BLOCK_SIZE] = {'t', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 't', 't', 'e', 's', 's'};
-
-    u8 iv_enc[AES_BLOCK_SIZE];
-    u8 iv_dec[AES_BLOCK_SIZE];
-
-    memcpy(iv_enc, iv, AES_BLOCK_SIZE);
-    memcpy(iv_dec, iv, AES_BLOCK_SIZE);
-
-    u8 message[] = "This is a very big string to test out this AES encryption/decryption.";
-
-    u8* encryption_output;
-    u8* decryption_output;
-    encryption_output = malloc(128);
-    decryption_output = malloc(128);
-
-    _AES_CBC_encrypt(message, encryption_output, sizeof(message), key, iv_enc);
-    s8* b64_encoded = _b64_encode(encryption_output, sizeof(encryption_output));
-    printf("%s\n", b64_encoded);
-
-    _AES_CBC_decrypt(encryption_output, decryption_output, sizeof(message), key, iv_dec);
-
-    printf("%s\n", decryption_output);
-
-    free(b64_encoded);
-    free(encryption_output);
-    free(decryption_output);
+    while ((copts = getopt(argc, argv, "l:")) != -1) {
+        switch (copts) {
+            case 'l':
+                //sql3_list_tables();
+                break;
+            default:
+                exit(EXIT_FAILURE);
+      }
+    }
 
     return EXIT_SUCCESS;
 }
