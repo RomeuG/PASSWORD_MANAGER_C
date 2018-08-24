@@ -10,6 +10,8 @@
 #define DIR_SEPARATOR "/"
 #define DIR_PERMISSIONS 0700
 
+#define SQL3_CREATE_TABLE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
+
 int __mkdir(char *dir)
 {
 	return mkdir(dir, DIR_PERMISSIONS);
@@ -93,7 +95,25 @@ int sql3_db_close(sqlite3 *_db)
     return sqlite3_close_v2(_db);
 }
 
-int sql3_list_tables(sqlite3 *_db) 
+int sql3_table_create(sqlite3 *_db, char *table_name)
+{
+	int rc;
+	char* err_msg = 0;
+	char* sql_stmt = NULL;
+
+	snprintf(sql_stmt, 256, SQL3_CREATE_TABLE_FORMAT_STRING, table_name, table_name);
+
+	rc = sqlite3_exec(_db, sql_stmt, 0, 0, &err_msg);
+
+	if(rc != SQLITE_OK) {
+		DEBUG_PRINT("%s", "TEST");
+		sqlite3_free(err_msg);
+	} else {
+		DEBUG_PRINT("%s", "Table created successfully");
+	}
+}
+
+int sql3_table_list(sqlite3 *_db)
 {
 	sqlite3_stmt *stmt;
 	return sqlite3_prepare_v2(_db, SQL_LIST_TABLES, -1, &stmt, NULL);
