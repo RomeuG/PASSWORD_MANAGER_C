@@ -32,6 +32,22 @@ bool sql3_cfg_dir_exists(char *dir)
 	return false;
 }
 
+char *sql3_get_db_full_path(char *dir, char *db_name)
+{
+    char *full_path = malloc(256);
+
+    // use safe versions of these functions
+    strcpy(full_path, dir);
+    strcat(full_path, DIR_SEPARATOR);
+    strcat(full_path, DIR_DATABASE);
+
+    // concatenate db file name
+    strcat(full_path, DIR_SEPARATOR);
+    strcat(full_path, db_name);
+
+    return full_path;
+}
+
 // TODO function too big, creating two things in here is too much
 bool sql3_db_exists_create(char *dir, char *db_name)
 {
