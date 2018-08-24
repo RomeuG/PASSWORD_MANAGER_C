@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #define DIR_DATABASE "passshelter"
 #define DIR_SEPARATOR "/"
@@ -11,6 +12,11 @@
 int __mkdir(char *dir)
 {
 	return mkdir(dir, DIR_PERMISSIONS);
+}
+
+int sql3_create_db_file(char *full_path)
+{
+    return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, 0666); // TODO 0666
 }
 
 bool sql3_cfg_dir_exists(char *dir)
@@ -50,6 +56,10 @@ bool sql3_db_exists_create(char *dir, char *db_name)
   	if (access(full_path, F_OK) != -1) {
     	return true;
 	}
+
+	if (sql3_create_db_file(full_path) >= 0) {
+        return true;
+    }
 
 	return false;
 }
