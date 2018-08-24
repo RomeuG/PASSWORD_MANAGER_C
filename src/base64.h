@@ -15,8 +15,8 @@ static const char b64_table[] = {
   '4', '5', '6', '7', '8', '9', '+', '/'
 };
 
-int8* _b64_encode (const uint8 *, size_t);
-uint8* _b64_decode (const int8 *, size_t);
-uint8* _b64_decode_ex (const int8 *, size_t, size_t *);
+s8* _b64_encode (const u8 *, size_t);
+u8* _b64_decode (const s8 *, size_t);
+u8* _b64_decode_ex (const s8 *, size_t, size_t *);
 
 #endif
