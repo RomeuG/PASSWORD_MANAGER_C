@@ -9,9 +9,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "defines.h"
+
 int __mkdir(char *dir);
 bool sql3_cfg_dir_exists(char *dir);
-char* sql3_get_db_full_path(char *dir, char* db_name);
+char* sql3_cfg_get_path(char *dir, char* db_name, u8 type);
 bool sql3_db_exists_create(char *dir, char *db_name);
 int sql3_db_init(sqlite3 **_db, char *db_name);
 int sql3_db_close(sqlite3 *_db);

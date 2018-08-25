@@ -11,6 +11,10 @@
 #define DIR_DATABASE "passshelter"
 #define DIR_SEPARATOR "/"
 #define DIR_PERMISSIONS 0700
+#define DIR_MAX_SIZE 512
+
+#define PATH_CONFIG_DIR 0
+#define PATH_FULL_PATH 1
 
 // TODO: should not drop table
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
@@ -41,18 +45,25 @@ bool sql3_cfg_dir_exists(char *dir)
 	return false;
 }
 
-char *sql3_get_db_full_path(char *dir, char *db_name)
+char *sql3_cfg_get_path(char *dir, char *db_name, u8 type)
 {
-    char *full_path = malloc(256);
+    char *full_path = malloc(DIR_MAX_SIZE);
 
-    // use safe versions of these functions
-    strcpy(full_path, dir);
-    strcat(full_path, DIR_SEPARATOR);
-    strcat(full_path, DIR_DATABASE);
+    if (type == PATH_CONFIG_DIR) {
+		// use safe versions of these functions
+		strcpy(full_path, dir);
+		strcat(full_path, DIR_SEPARATOR);
+		strcat(full_path, DIR_DATABASE);
+    } else {
+		// use safe versions of these functions
+		strcpy(full_path, dir);
+		strcat(full_path, DIR_SEPARATOR);
+		strcat(full_path, DIR_DATABASE);
 
-    // concatenate db file name
-    strcat(full_path, DIR_SEPARATOR);
-    strcat(full_path, db_name);
+		// concatenate db file name
+		strcat(full_path, DIR_SEPARATOR);
+		strcat(full_path, db_name);
+    }
 
     return full_path;
 }
