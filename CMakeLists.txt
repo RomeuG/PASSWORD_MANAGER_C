@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(src)
 set(CMAKE_EXE_LINKER_FLAGS "-lsqlite3 -lssl -lcrypto")
 
-add_definitions(-DDEBUG)
+add_definitions(-DDEBUG -D_GNU_SOURCE)
 
 add_executable(PASSWORD_MANAGER
         src/base64.c
