@@ -1,17 +1,20 @@
 #include "database.h"
 #include "utils.h"
+#include "defines.h"
 
 #include <dirent.h>
 #include <errno.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <stdio.h>
 
 #define DIR_DATABASE "passshelter"
 #define DIR_SEPARATOR "/"
 #define DIR_PERMISSIONS 0700
 
+// TODO: should not drop table
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
-#define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES('%s', '%s');"
+#define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
 #define SQL3_TABLE_DELETE_FORMAT_STRING "DELETE FROM %s WHERE ID = %s;"
 #define SQL3_TABLE_DROP_FORMAT_STRING "DROP TABLE %s;"
 #define SQL3_TABLE_LIST_FORMAT_STRING "SELECT name FROM sqlite_master WHERE type='table'"
@@ -88,13 +91,13 @@ bool sql3_db_exists_create(char *dir, char *db_name)
 }
 
 // database open encapsulation
-int sql3_db_init(sqlite3 *_db, char *db_name) 
+int sql3_db_init(sqlite3 **_db, char *db_name)
 {
-    return sqlite3_open_v2(db_name, &_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+    return sqlite3_open_v2(db_name, _db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 }
 
 // database close encapsulation
-int sql3_db_close(sqlite3 *_db) 
+int sql3_db_close(sqlite3 *_db)
 {
     return sqlite3_close_v2(_db);
 }
@@ -102,23 +105,40 @@ int sql3_db_close(sqlite3 *_db)
 int sql3_table_create(sqlite3 *_db, char *table_name)
 {
 	int rc;
-	char* err_msg = 0;
-	char* sql_stmt = NULL;
+	char *query = NULL;
 
-	snprintf(sql_stmt, 256, SQL3_TABLE_CREATE_FORMAT_STRING, table_name, table_name);
-
-	rc = sqlite3_exec(_db, sql_stmt, 0, 0, &err_msg);
-
-	if(rc != SQLITE_OK) {
-		DEBUG_PRINT("%s", "TEST");
-		sqlite3_free(err_msg);
-	} else {
-		DEBUG_PRINT("%s", "Table created successfully");
+	rc = asprintf(&query, SQL3_TABLE_CREATE_FORMAT_STRING, table_name, table_name);
+	if (rc <= 0) {
+	    DEBUG_PRINT("%s - %d\n", "Error asprintf()", rc);
+	    return rc;
 	}
+
+    rc = sqlite3_exec(_db, query, 0, 0, NULL);
+	if(rc != SQLITE_OK) {
+	    DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+	    return rc;
+	}
+
+	free(query);
+	return rc;
 }
 
 int sql3_table_list(sqlite3 *_db)
 {
-	sqlite3_stmt *stmt;
-	return sqlite3_prepare_v2(_db, SQL_LIST_TABLES, -1, &stmt, NULL);
+	int rc;
+    sqlite3_stmt *stmt;
+
+    sqlite3_prepare_v2(_db, SQL3_TABLE_LIST_FORMAT_STRING, -1, &stmt, NULL);
+
+    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+        printf("%s\n", sqlite3_column_text(stmt, 0));
+    }
+
+    if (rc == SQLITE_DONE) {
+		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+		return !SQLITE_DONE;
+    }
+
+    sqlite3_finalize(stmt);
+    return rc;
 }
