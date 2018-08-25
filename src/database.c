@@ -10,7 +10,11 @@
 #define DIR_SEPARATOR "/"
 #define DIR_PERMISSIONS 0700
 
-#define SQL3_CREATE_TABLE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
+#define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
+#define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES('%s', '%s');"
+#define SQL3_TABLE_DELETE_FORMAT_STRING "DELETE FROM %s WHERE ID = %s;"
+#define SQL3_TABLE_DROP_FORMAT_STRING "DROP TABLE %s;"
+#define SQL3_TABLE_LIST_FORMAT_STRING "SELECT name FROM sqlite_master WHERE type='table'"
 
 int __mkdir(char *dir)
 {
@@ -101,7 +105,7 @@ int sql3_table_create(sqlite3 *_db, char *table_name)
 	char* err_msg = 0;
 	char* sql_stmt = NULL;
 
-	snprintf(sql_stmt, 256, SQL3_CREATE_TABLE_FORMAT_STRING, table_name, table_name);
+	snprintf(sql_stmt, 256, SQL3_TABLE_CREATE_FORMAT_STRING, table_name, table_name);
 
 	rc = sqlite3_exec(_db, sql_stmt, 0, 0, &err_msg);
 
