@@ -10,11 +10,10 @@
 
 #define DIR_DATABASE "passshelter"
 #define DIR_SEPARATOR "/"
+#define DIR_HOME_CONFIG ".config"
+
 #define DIR_PERMISSIONS 0700
 #define DIR_MAX_SIZE 512
-
-#define PATH_CONFIG_DIR 0
-#define PATH_FULL_PATH 1
 
 // TODO: should not drop table
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
@@ -28,7 +27,7 @@ int __mkdir(char *dir)
 	return mkdir(dir, DIR_PERMISSIONS);
 }
 
-int sql3_create_db_file(char *full_path)
+int sql3_cfg_create_file(char *full_path)
 {
     return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, 0666); // TODO 0666
 }
@@ -45,48 +44,37 @@ bool sql3_cfg_dir_exists(char *dir)
 	return false;
 }
 
-char *sql3_cfg_get_path(char *dir, char *db_name, u8 type)
+// TODO this function will substitute sql3_cfg_get_path
+static char *build_config_path(char *dir)
 {
-    char *full_path = malloc(DIR_MAX_SIZE);
+    //char *full_path = malloc(PATH_MAX);
 
-    if (type == PATH_CONFIG_DIR) {
-		// use safe versions of these functions
-		strcpy(full_path, dir);
-		strcat(full_path, DIR_SEPARATOR);
-		strcat(full_path, DIR_DATABASE);
-    } else {
-		// use safe versions of these functions
-		strcpy(full_path, dir);
-		strcat(full_path, DIR_SEPARATOR);
-		strcat(full_path, DIR_DATABASE);
+    if (strcmp(dir, __home_dir) == 0) {
+        // build path from $HOME
+        strcat(dir, DIR_SEPARATOR);
+        strcat(dir, DIR_DATABASE);
 
-		// concatenate db file name
-		strcat(full_path, DIR_SEPARATOR);
-		strcat(full_path, db_name);
+    } else if (strcmp(dir, __config_dir) == 0) {
+        // build path from $HOME/.config
+        strcat(dir, DIR_SEPARATOR);
+        strcat(dir, DIR_DATABASE);
+
+        if (!sql3_cfg_dir_exists(dir)) {
+            if(__mkdir(dir) != 0) {
+                DEBUG_PRINT("Errno - %d - %s\n", errno, strerror(errno));
+                return NULL;
+            }
+        }
     }
 
-    return full_path;
+    return dir;
 }
 
 // TODO function too big, creating two things in here is too much
 bool sql3_db_exists_create(char *dir, char *db_name)
 {
-  	char full_path[256];
+    char *full_path = build_config_path(dir);
 
-	// use safe versions of these functions
-	strcpy(full_path, dir);
-	strcat(full_path, DIR_SEPARATOR);
-	strcat(full_path, DIR_DATABASE);
-
-	// check if $HOME/.config/passshelter exists
-	if (!sql3_cfg_dir_exists(full_path)) {
-		if(__mkdir(full_path) != 0) {
-		    DEBUG_PRINT("Errno - %d - %s\n", errno, strerror(errno));
-            return false;
-		}
-	}
-
-	// concatenate db file name
 	strcat(full_path, DIR_SEPARATOR);
 	strcat(full_path, db_name);
 
@@ -94,7 +82,7 @@ bool sql3_db_exists_create(char *dir, char *db_name)
     	return true;
 	}
 
-	if (sql3_create_db_file(full_path) >= 0) {
+	if (sql3_cfg_create_file(full_path) >= 0) {
         return true;
     }
 
@@ -127,6 +115,7 @@ int sql3_table_create(sqlite3 *_db, char *table_name)
     rc = sqlite3_exec(_db, query, 0, 0, NULL);
 	if(rc != SQLITE_OK) {
 	    DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+	    free(query);
 	    return rc;
 	}
 
@@ -147,7 +136,7 @@ int sql3_table_list(sqlite3 *_db)
 
     if (rc == SQLITE_DONE) {
 		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
-		return !SQLITE_DONE;
+		return rc;
     }
 
     sqlite3_finalize(stmt);
