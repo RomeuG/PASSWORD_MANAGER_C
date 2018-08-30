@@ -50,17 +50,21 @@ int main(int argc, char** argv, char **envp)
     default_available_path = malloc(PATH_MAX);
     strcpy(default_available_path, __config_dir ? __config_dir : __home_dir);
 
-    // TODO macro to do the checking
-    if (!sql3_db_exists_create(default_available_path, DATABASE_NAME)) {
-        DEBUG_PRINT("%s", "Problems creating database file...\nExiting...\n");
+    rc = sql3_db_exists_create(default_available_path, DATABASE_NAME);
+    if (!rc) {
+        DEBUG_PRINT("%s\n", "problems creating database file...\nExiting...");
         exit(EXIT_FAILURE);
     }
 
-    // TODO macro to do the checking
     rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
-        DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(db), rc);
+        DEBUG_PRINT("%s\n", sqlite3_errmsg(db));
+        exit(EXIT_FAILURE);
     }
+//    CHECK(sql3_db_exists_create(default_available_path, DATABASE_NAME), true, exit(EXIT_FAILURE),
+//          CMP_NE, "%s\n", "Problems creating database file...\nExiting...");
+//    CHECK(sql3_db_init(&db, default_available_path), SQLITE_OK, exit(EXIT_FAILURE),
+//          CMP_NE, "%s\n", sqlite3_errmsg(db));
 
     while ((copts = getopt(argc, argv, "l:")) != -1) {
         switch (copts) {

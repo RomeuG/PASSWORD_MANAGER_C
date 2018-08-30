@@ -16,4 +16,12 @@
 // encryption
 #define AES_KEY_LENGTH 32
 
+// comparators for macros
+#define CMP_E ==
+#define CMP_NE !=
+#define CMP_G >
+#define CMP_GE >=
+#define CMP_L <
+#define CMP_LE <=
+
 #endif

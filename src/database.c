@@ -52,10 +52,13 @@ static char *build_config_path(char *dir)
     if (strcmp(dir, __home_dir) == 0) {
         // build path from $HOME
         strcat(dir, DIR_SEPARATOR);
-        strcat(dir, DIR_DATABASE);
+        strcat(dir, DIR_HOME_CONFIG);
+
+        goto _continue;
 
     } else if (strcmp(dir, __config_dir) == 0) {
         // build path from $HOME/.config
+        _continue:
         strcat(dir, DIR_SEPARATOR);
         strcat(dir, DIR_DATABASE);
 
@@ -65,6 +68,13 @@ static char *build_config_path(char *dir)
                 return NULL;
             }
         }
+
+//        CHECK(sql3_cfg_dir_exists(dir), false, {
+//                CHECK(__mkdir(dir), (0), return NULL, CMP_NE, "%s - %d\n", strerror(errno), errno);
+//            }, CMP_E, "%s\n", "configuration directory does not exist");
+    } else {
+        DEBUG_PRINT("%s - %d\n", strerror(errno), errno);
+        return NULL;
     }
 
     return dir;
@@ -73,18 +83,28 @@ static char *build_config_path(char *dir)
 // TODO function too big, creating two things in here is too much
 bool sql3_db_exists_create(char *dir, char *db_name)
 {
+    int rc;
     char *full_path = build_config_path(dir);
 
 	strcat(full_path, DIR_SEPARATOR);
 	strcat(full_path, db_name);
 
-  	if (access(full_path, F_OK) != -1) {
-    	return true;
+	rc = access(full_path, F_OK);
+	if (rc != -1) {
+	    DEBUG_PRINT("%s\n", "database config already exists");
+	    return true;
 	}
 
-	if (sql3_cfg_create_file(full_path) >= 0) {
-        return true;
-    }
+	rc = sql3_cfg_create_file(full_path);
+	if (rc >= 0) {
+	    DEBUG_PRINT("%s\n", "database fil;e created successfully");
+	    return true;
+	}
+
+//    CHECK(access(full_path, F_OK), (-1), return true,
+//          CMP_NE, "%s\n", "database config already exists");
+//    CHECK(sql3_cfg_create_file(full_path), (0), return true,
+//            CMP_GE, "%s\n", "database file created successfully");
 
 	return false;
 }
