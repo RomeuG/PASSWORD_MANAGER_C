@@ -41,7 +41,7 @@ int main(int argc, char** argv, char **envp)
 
     if (!load_env_variables()) {
         if (__home_dir == NULL && __config_dir == NULL) {
-            DEBUG_PRINT("%s\n", "No environment variables found.");
+            DEBUG_PRINT("%s\n", "no environment variables found");
             exit(EXIT_FAILURE);
         }
     }
@@ -53,12 +53,14 @@ int main(int argc, char** argv, char **envp)
     rc = sql3_db_exists_create(default_available_path, DATABASE_NAME);
     if (!rc) {
         DEBUG_PRINT("%s\n", "problems creating database file...\nExiting...");
+        free(default_available_path);
         exit(EXIT_FAILURE);
     }
 
     rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
         DEBUG_PRINT("%s\n", sqlite3_errmsg(db));
+        free(default_available_path);
         exit(EXIT_FAILURE);
     }
 //    CHECK(sql3_db_exists_create(default_available_path, DATABASE_NAME), true, exit(EXIT_FAILURE),
@@ -66,10 +68,15 @@ int main(int argc, char** argv, char **envp)
 //    CHECK(sql3_db_init(&db, default_available_path), SQLITE_OK, exit(EXIT_FAILURE),
 //          CMP_NE, "%s\n", sqlite3_errmsg(db));
 
-    while ((copts = getopt(argc, argv, "l:")) != -1) {
+    while ((copts = getopt(argc, argv, "d:l:")) != -1) {
         switch (copts) {
+            case 'c':
+                sql3_table_create(db, optarg);
+                break;
+            case 'd':
+                sql3_table_delete(db, optarg);
+                break;
             case 'l':
-                sql3_table_create(db, "TEST_DB");
                 sql3_table_list(db);
                 break;
             default:

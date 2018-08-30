@@ -44,11 +44,8 @@ bool sql3_cfg_dir_exists(char *dir)
 	return false;
 }
 
-// TODO this function will substitute sql3_cfg_get_path
 static char *build_config_path(char *dir)
 {
-    //char *full_path = malloc(PATH_MAX);
-
     if (strcmp(dir, __home_dir) == 0) {
         // build path from $HOME
         strcat(dir, DIR_SEPARATOR);
@@ -155,10 +152,32 @@ int sql3_table_list(sqlite3 *_db)
     }
 
     if (rc == SQLITE_DONE) {
-		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
-		return rc;
+		goto finish;
     }
 
+	finish:
     sqlite3_finalize(stmt);
     return rc;
+}
+
+int sql3_table_delete(sqlite3 *_db, char *table_name)
+{
+	int rc;
+	char *query = NULL;
+
+	rc = asprintf(&query, SQL3_TABLE_DROP_FORMAT_STRING, table_name);
+	if (rc <= 0) {
+		DEBUG_PRINT("%s - %d\n", "Error asprintf()", rc);
+		return rc;
+	}
+
+	rc = sqlite3_exec(_db, query, 0, 0, NULL);
+	if(rc != SQLITE_OK) {
+		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+		free(query);
+		return rc;
+	}
+
+	free(query);
+	return rc;
 }
