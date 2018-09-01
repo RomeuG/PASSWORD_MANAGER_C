@@ -30,7 +30,7 @@ int __mkdir(char *dir)
 
 int sql3_cfg_create_file(char *full_path)
 {
-    return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, FILE_PERMISSIONS); // TODO 0666
+	return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, FILE_PERMISSIONS); // TODO 0666
 }
 
 bool sql3_cfg_dir_exists(char *dir)
