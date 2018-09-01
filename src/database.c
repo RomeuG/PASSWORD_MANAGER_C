@@ -12,6 +12,7 @@
 #define DIR_SEPARATOR "/"
 #define DIR_HOME_CONFIG ".config"
 
+#define FILE_PERMISSIONS 0666
 #define DIR_PERMISSIONS 0700
 #define DIR_MAX_SIZE 512
 
@@ -29,7 +30,7 @@ int __mkdir(char *dir)
 
 int sql3_cfg_create_file(char *full_path)
 {
-    return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, 0666); // TODO 0666
+    return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, FILE_PERMISSIONS); // TODO 0666
 }
 
 bool sql3_cfg_dir_exists(char *dir)
@@ -172,6 +173,7 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 	}
 
 	rc = sqlite3_exec(_db, query, 0, 0, NULL);
+	rc = 1;
 	if(rc != SQLITE_OK) {
 		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
 		free(query);
