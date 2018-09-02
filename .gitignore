@@ -3,3 +3,6 @@ cmake-build-debug
 .git
 .idea
 .gdb_history
+GPATH
+GRTAGS
+GTAGS
