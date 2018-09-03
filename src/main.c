@@ -10,6 +10,8 @@
 #include "database.h"
 #include "utils.h"
 
+#include "tests.h"
+
 #define EV_CONFIG_DIR "XDG_CONFIG_HOME"
 #define EV_HOME_DIR "HOME"
 #define DATABASE_NAME "pass_shelter.db"
@@ -34,19 +36,23 @@ u8 load_env_variables()
 
 int main(int argc, char** argv, char **envp)
 {
-    int rc;
-    int copts;
-    sqlite3 *db;
-    char *default_available_path = NULL;
+	int rc;
+	int copts;
+	sqlite3 *db;
+	char *default_available_path = NULL;
 
-    if (!load_env_variables()) {
-        if (__home_dir == NULL && __config_dir == NULL) {
-            DEBUG_PRINT("%s\n", "no environment variables found");
-            exit(EXIT_FAILURE);
-        }
-    }
+	// init some ssl stuff
+	OpenSSL_add_all_algorithms();
 
-    // allocate less bytes. Current = 4kb
+	// load environment variables
+	if (!load_env_variables()) {
+		if (__home_dir == NULL && __config_dir == NULL) {
+			DEBUG_PRINT("%s\n", "no environment variables found");
+			exit(EXIT_FAILURE);
+		}
+	}
+
+    // TODO: allocate less bytes. Current = 4kb
     default_available_path = malloc(PATH_MAX);
     strcpy(default_available_path, __config_dir ? __config_dir : __home_dir);
 
@@ -57,34 +63,41 @@ int main(int argc, char** argv, char **envp)
         exit(EXIT_FAILURE);
     }
 
-    rc = sql3_db_init(&db, default_available_path);
+	rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
         DEBUG_PRINT("%s\n", sqlite3_errmsg(db));
         free(default_available_path);
         exit(EXIT_FAILURE);
-    }
-//    CHECK(sql3_db_exists_create(default_available_path, DATABASE_NAME), true, exit(EXIT_FAILURE),
-//          CMP_NE, "%s\n", "Problems creating database file...\nExiting...");
-//    CHECK(sql3_db_init(&db, default_available_path), SQLITE_OK, exit(EXIT_FAILURE),
-//          CMP_NE, "%s\n", sqlite3_errmsg(db));
+	}
 
-    while ((copts = getopt(argc, argv, "d:l:")) != -1) {
-        switch (copts) {
-            case 'c':
-                sql3_table_create(db, optarg);
-                break;
-            case 'd':
-                sql3_table_delete(db, optarg);
-                break;
-            case 'l':
-                sql3_table_list(db);
-                break;
-            default:
-                exit(EXIT_FAILURE);
-      }
-    }
+	/*
+	  CHECK(sql3_db_exists_create(default_available_path, DATABASE_NAME), true, exit(EXIT_FAILURE),
+	  CMP_NE, "%s\n", "Problems creating database file...\nExiting...");
+	  CHECK(sql3_db_init(&db, default_available_path), SQLITE_OK, exit(EXIT_FAILURE),
+	  CMP_NE, "%s\n", sqlite3_errmsg(db));
+	*/
 
-    sql3_db_close(db);
+	// command line options
+	while ((copts = getopt(argc, argv, "d:l:t")) != -1) {
+		switch (copts) {
+		case 'c':
+			sql3_table_create(db, optarg);
+			break;
+		case 'd':
+			sql3_table_delete(db, optarg);
+			break;
+		case 'l':
+			sql3_table_list(db);
+			break;
+        case 't':
+            __tests();
+            break;
+		default:
+			exit(EXIT_FAILURE);
+		}
+	}
+
+	sql3_db_close(db);
 
     return EXIT_SUCCESS;
 }
