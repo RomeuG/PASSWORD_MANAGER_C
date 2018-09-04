@@ -64,12 +64,12 @@ s8* _b64_encode(const u8 *src, size_t len)
   	return enc;
 }
 
-u8* _b64_decode_ex(const s8 *src, size_t len, size_t *decsize) 
+u8* _b64_decode_ex(const s8 *src, size_t len, size_t *decsize)
 {
   	int i = 0;
   	int j = 0;
   	int l = 0;
-	 
+
   	size_t size = 0;
 
   	u8 *dec = NULL;
@@ -77,8 +77,8 @@ u8* _b64_decode_ex(const s8 *src, size_t len, size_t *decsize)
   	u8 tmp[4];
 
   	dec = malloc(0);
-  	if (NULL == dec) { 
-		return NULL; 
+  	if (NULL == dec) {
+		return NULL;
 	}
 
   	while (len--) {
@@ -142,7 +142,7 @@ u8* _b64_decode_ex(const s8 *src, size_t len, size_t *decsize)
   	return dec;
 }
 
-u8* _b64_decode(const s8 *src, size_t len) 
+u8* _b64_decode(const s8 *src, size_t len)
 {
 	return _b64_decode_ex(src, len, NULL);
 }
