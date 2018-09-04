@@ -19,4 +19,4 @@ add_executable(PASSWORD_MANAGER
         src/main.c
         src/utils.c
         src/utils.h
-        README.md)
+        README.md src/tests.h src/tests.c)
