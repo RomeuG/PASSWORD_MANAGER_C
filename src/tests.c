@@ -1,11 +1,22 @@
 #include <assert.h>
 #include "tests.h"
 
-#define assert__(function, operation, expected) { \
-    assert(function() operation expected);\
+#define _ASSERT(function, operation, expected) { \
+    __ASSERT(function() operation expected);\
 }
 
+#define REGISTER(function) jump_table[i] = function;
+
+#define __ASSERT(expr)							\
+  ((void) sizeof ((expr) ? 1 : 0), __extension__ ({			\
+      if (expr)								\
+        ; /* empty */							\
+      else								\
+        __assert_fail (#expr, __FILE__, __LINE__, __ASSERT_FUNCTION);	\
+    }))
+
 u8 i;
+bool (*jump_table[32])(void);
 
 bool __test_pbkdf2_hmac_sha1()
 {
@@ -26,5 +37,7 @@ bool __test_pbkdf2_hmac_sha1()
 
 void __tests()
 {
-    assert__(__test_pbkdf2_hmac_sha1, CMP_E, true);
+	REGISTER(__test_pbkdf2_hmac_sha1);
+
+    _ASSERT(jump_table[0], CMP_NE, true);
 }
