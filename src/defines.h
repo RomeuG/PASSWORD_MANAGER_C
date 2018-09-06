@@ -38,4 +38,12 @@
 #define CMP_L <
 #define CMP_LE <=
 
+// comparator for macro strings
+#define CMP_E_STR "=="
+#define CMP_NE_STR "!="
+#define CMP_G_STR ">"
+#define CMP_GE_STR ">="
+#define CMP_L_STR "<"
+#define CMP_LE_STR "<="
+
 #endif
