@@ -99,5 +99,7 @@ int main(int argc, char** argv, char **envp)
 
 	sql3_db_close(db);
 
+	free(default_available_path);
+
     return EXIT_SUCCESS;
 }

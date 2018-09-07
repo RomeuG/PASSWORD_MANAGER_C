@@ -19,6 +19,8 @@ static bool __test_pbkdf2_hmac_sha1()
     }
 
     printf("Hex result: %s\n", result);
+
+    free(result);
     return true;
 }
 

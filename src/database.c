@@ -38,6 +38,7 @@ bool sql3_cfg_dir_exists(char *dir)
 	DIR *_dir = opendir(dir);
 
 	if (_dir) {
+		free(_dir);
 		return true;
 	}
 
