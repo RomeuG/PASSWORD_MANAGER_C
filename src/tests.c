@@ -10,7 +10,8 @@ static bool __test_pbkdf2_hmac_sha1()
     char pass[] = "random_password";
     unsigned char* salt = "12345678";
 
-    char *result = malloc(2 * PBKDF2_OUTPUT_SIZE);
+    // +1 for null terminator
+    char *result = malloc((2 * PBKDF2_OUTPUT_SIZE) + 1);
 
     bool res = PBKDF2_HMAC_SHA_X(pass, sizeof(pass), salt, PKCS5_SALT_LEN, result);
     if (!res) {
