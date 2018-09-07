@@ -5,7 +5,7 @@ u8 successful_tests = 0;
 u8 tests_registered = 0;
 struct __test_case jump_table[TEST_NUMBER];
 
-bool __test_pbkdf2_hmac_sha1()
+static bool __test_pbkdf2_hmac_sha1()
 {
     char pass[] = "random_password";
     unsigned char* salt = "12345678";
@@ -22,7 +22,7 @@ bool __test_pbkdf2_hmac_sha1()
     return true;
 }
 
-bool _test2()
+static bool _test2()
 {
     return true;
 }

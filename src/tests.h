@@ -37,10 +37,12 @@
 
 #define __ASSERT(expr)							\
   ((void) sizeof ((expr) ? 1 : 0), __extension__ ({			\
-      if (expr)								\
-        successful_tests++; /* TODO */							\
-      else								\
-        __assert_fail (#expr, __FILE__, __LINE__, __ASSERT_FUNCTION);	\
+      if (expr)    {                            \
+        successful_tests++; /* TODO */                            \
+        DEBUG_PRINT("%s successful\n", #expr);\
+      } else {                            \
+        __assert_fail (#expr, __FILE__, __LINE__, __ASSERT_FUNCTION);    \
+        } \
     }))
 
 
