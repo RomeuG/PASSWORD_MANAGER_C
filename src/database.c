@@ -63,7 +63,7 @@ static char *build_config_path(char *dir)
 
         if (!sql3_cfg_dir_exists(dir)) {
             if(__mkdir(dir) != 0) {
-                DEBUG_PRINT("Errno - %d - %s\n", errno, strerror(errno));
+                DEBUG_PRINT(stderr, "Errno - %d - %s\n", errno, strerror(errno));
                 return NULL;
             }
         }
@@ -72,7 +72,7 @@ static char *build_config_path(char *dir)
 //                CHECK(__mkdir(dir), (0), return NULL, CMP_NE, "%s - %d\n", strerror(errno), errno);
 //            }, CMP_E, "%s\n", "configuration directory does not exist");
     } else {
-        DEBUG_PRINT("%s - %d\n", strerror(errno), errno);
+        DEBUG_PRINT(stderr, "%s - %d\n", strerror(errno), errno);
         return NULL;
     }
 
@@ -90,13 +90,13 @@ bool sql3_db_exists_create(char *dir, char *db_name)
 
 	rc = access(full_path, F_OK);
 	if (rc != -1) {
-	    DEBUG_PRINT("%s\n", "database config already exists");
+	    DEBUG_PRINT(stderr, "%s\n", "database config already exists");
 	    return true;
 	}
 
 	rc = sql3_cfg_create_file(full_path);
 	if (rc >= 0) {
-	    DEBUG_PRINT("%s\n", "database fil;e created successfully");
+	    DEBUG_PRINT(stderr, "%s\n", "database fil;e created successfully");
 	    return true;
 	}
 
@@ -127,13 +127,13 @@ int sql3_table_create(sqlite3 *_db, char *table_name)
 
 	rc = asprintf(&query, SQL3_TABLE_CREATE_FORMAT_STRING, table_name, table_name);
 	if (rc <= 0) {
-	    DEBUG_PRINT("%s - %d\n", "Error asprintf()", rc);
+	    DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
 	    return rc;
 	}
 
     rc = sqlite3_exec(_db, query, 0, 0, NULL);
 	if(rc != SQLITE_OK) {
-	    DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+	    DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
 	    free(query);
 	    return rc;
 	}
@@ -169,14 +169,14 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 
 	rc = asprintf(&query, SQL3_TABLE_DROP_FORMAT_STRING, table_name);
 	if (rc <= 0) {
-		DEBUG_PRINT("%s - %d\n", "Error asprintf()", rc);
+		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
 		return rc;
 	}
 
 	rc = sqlite3_exec(_db, query, 0, 0, NULL);
 	rc = 1;
 	if(rc != SQLITE_OK) {
-		DEBUG_PRINT("%s - %d\n", sqlite3_errmsg(_db), rc);
+		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
 		free(query);
 		return rc;
 	}

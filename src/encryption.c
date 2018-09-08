@@ -8,13 +8,13 @@ bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len
 	unsigned char digest[PBKDF2_OUTPUT_SIZE];
 
 	if (!hex_result) {
-		DEBUG_PRINT("%s\n", "variable for result is NULL");
+		DEBUG_PRINT(stderr, "%s\n", "variable for result is NULL");
 		return false;
 	}
 
 	rc = PKCS5_PBKDF2_HMAC(pass, pass_len, salt, salt_len, PBKDF2_ITERATIONS, EVP_SHA1, PBKDF2_OUTPUT_SIZE, digest);
 	if (rc == 0) {
-		DEBUG_PRINT("%s\n", "PKCS5_PBKDF2_HMAC() failed");
+		DEBUG_PRINT(stderr, "%s\n", "PKCS5_PBKDF2_HMAC() failed");
 		return false;
 	}
 

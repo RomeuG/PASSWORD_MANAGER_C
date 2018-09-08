@@ -12,6 +12,9 @@
 
 #include "tests.h"
 
+// TODO use pragma poison
+#pragma GCC poison
+
 #define EV_CONFIG_DIR "XDG_CONFIG_HOME"
 #define EV_HOME_DIR "HOME"
 #define DATABASE_NAME "pass_shelter.db"
@@ -47,7 +50,7 @@ int main(int argc, char** argv, char **envp)
 	// load environment variables
 	if (!load_env_variables()) {
 		if (__home_dir == NULL && __config_dir == NULL) {
-			DEBUG_PRINT("%s\n", "no environment variables found");
+			DEBUG_PRINT(stderr, "%s\n", "no environment variables found");
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -58,14 +61,14 @@ int main(int argc, char** argv, char **envp)
 
     rc = sql3_db_exists_create(default_available_path, DATABASE_NAME);
     if (!rc) {
-        DEBUG_PRINT("%s\n", "problems creating database file...\nExiting...");
+        DEBUG_PRINT(stderr, "%s\n", "problems creating database file...\nExiting...");
         free(default_available_path);
         exit(EXIT_FAILURE);
     }
 
 	rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
-        DEBUG_PRINT("%s\n", sqlite3_errmsg(db));
+        DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(db));
         free(default_available_path);
         exit(EXIT_FAILURE);
 	}
@@ -90,8 +93,8 @@ int main(int argc, char** argv, char **envp)
 			sql3_table_list(db);
 			break;
         case 't':
-            __tests();
-            break;
+			__tests();
+			break;
 		default:
 			exit(EXIT_FAILURE);
 		}

@@ -10,7 +10,7 @@ char *__getenv(char *env_var)
 	char *_env_str = getenv(env_var);
 
 	if (_env_str == NULL) {
-		DEBUG_PRINT("%d\n", errno);
+		DEBUG_PRINT(stderr, "%d\n", errno);
 		return NULL;
 	}
 
