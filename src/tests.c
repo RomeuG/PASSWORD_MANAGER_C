@@ -1,6 +1,9 @@
 #include <assert.h>
 #include "tests.h"
 
+struct timeval t_beginning;
+struct timeval t_ending;
+
 u8 successful_tests = 0;
 u8 tests_registered = 0;
 struct __test_case jump_table[TEST_NUMBER];
@@ -19,8 +22,6 @@ static bool __test_pbkdf2_hmac_sha1()
         return false;
     }
 
-    printf("Hex result: %s\n", result);
-
     free(result);
     return true;
 }
@@ -36,5 +37,5 @@ void __tests()
 	REGISTER_TEST(_test2, CMP_E_STR, true);
     ASSERT_ALL();
 
-    printf("%d out of %d tests complete!\n", successful_tests, TEST_NUMBER);
+	printf("%d out of %d tests complete!\n", successful_tests, TEST_NUMBER);
 }
