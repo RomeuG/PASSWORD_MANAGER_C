@@ -10,7 +10,7 @@ void SSL_print_error()
 	free(err);
 }
 
-bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len, char* hex_result)
+bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len, u8* hex_result)
 {
 	u32 i;
 	s32 rc;
@@ -50,7 +50,7 @@ s32 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_enc)
 	return res;
 }
 
-s32 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv_dec)
+s32 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_dec)
 {
 	s32 res;
 
@@ -63,6 +63,5 @@ s32 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv
 	}
 
 	AES_cbc_encrypt(message, buffer_out, AES_KEY_LENGTH, &decryption_key, iv_dec, AES_DECRYPT);
-
 	return res;
 }
