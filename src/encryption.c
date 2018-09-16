@@ -34,7 +34,7 @@ bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len
 	return true;
 }
 
-s32 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv_enc)
+s32 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, u8 *key, u8 *iv_enc)
 {
 	s32 res;
 
@@ -42,7 +42,7 @@ s32 _AES_CBC_encrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv
 	res = AES_set_encrypt_key(key, AES_KEY_LENGTH * 4, &encryption_key);
 
 	if (res < 0) {
-		SSL_print_error();
+		DEBUG_PRINT(stderr, "%s\n", "AES_set_encrypt_key() error");
 		return res;
 	}
 
@@ -55,14 +55,14 @@ s32 _AES_CBC_decrypt(u8 *message, u8 *buffer_out, size_t length, u8 *key, u8 *iv
 	s32 res;
 
 	AES_KEY decryption_key;
-	res = AES_set_decrypt_key(key, AES_KEY_LENGTH * 8, &decryption_key);
+	res = AES_set_decrypt_key(key, AES_KEY_LENGTH * 4, &decryption_key);
 
 	if (res < 0) {
-		DEBUG_PRINT(stderr, "%s\n", "ERROR");
+		DEBUG_PRINT(stderr, "%s\n", "AES_set_decrypt_key()");
 		return res;
 	}
 
-	AES_cbc_encrypt(message, buffer_out, length, &decryption_key, iv_dec, AES_DECRYPT);
+	AES_cbc_encrypt(message, buffer_out, AES_KEY_LENGTH, &decryption_key, iv_dec, AES_DECRYPT);
 
 	return res;
 }

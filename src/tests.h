@@ -7,7 +7,7 @@
 #include "utils.h"
 #include "encryption.h"
 
-#define TEST_NUMBER 1
+#define TEST_NUMBER 2
 #define TEST_FUNCTION_NAME_SIZE 64
 #define OPERATOR_SIZE 3
 
@@ -62,6 +62,7 @@ do {                                                                            
     }));                                                                                                           \
 } while (0)
 
+// test case information
 struct __test_case {
 	bool (*function)();
 	char operation[OPERATOR_SIZE];
