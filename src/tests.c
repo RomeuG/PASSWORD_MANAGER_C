@@ -27,7 +27,7 @@ static bool __test_full_encryption_decryption()
 	char pass[] = "random_password";
 	unsigned char* salt = "12345678";
 
-	char* message = "HELLO WORLD!";
+	u8* message = (u8*)"HELLO WORLD!";
 	u8 output_encryption[128] = {0};
 	u8 output_decryption[128] = {0};
 

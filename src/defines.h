@@ -14,7 +14,7 @@
 #define s64 int64_t
 
 // encryption
-#define AES_KEY_LENGTH 32
+#define AES_KEY_LENGTH 64
 
 #define AES_128_CBC "aes-128-cbc"
 #define AES_256_CBC "aes-256-cbc"
@@ -24,7 +24,9 @@
 #define PBKDF2_ITERATIONS 1000
 
 #define EVP_SHA1 EVP_sha1()
+#define EVP_SHA224 EVP_sha224()
 #define EVP_SHA256 EVP_sha256()
+#define EVP_SHA384 EVP_sha384()
 #define EVP_SHA512 EVP_sha512()
 
 #define AES_SALT_LEN_8 8

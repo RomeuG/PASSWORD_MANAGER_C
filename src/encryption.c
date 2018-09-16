@@ -15,13 +15,6 @@ void SSL_print_error()
 	free(err);
 }
 
-//static void convert_to_hex(const u8* src, u8* dest, u32 n)
-//{
-//	for (u32 i = 0; i < n; i++) {
-//		sprintf(dest + (i * 2), "%02x", 255 & src[i]);
-//	}
-//}
-
 bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len, u8* hex_result)
 {
 	u32 i;

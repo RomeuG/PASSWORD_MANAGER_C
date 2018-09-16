@@ -23,7 +23,7 @@ char *__home_dir;
 char *__config_dir;
 
 // TODO more elegant error handling
-u8 load_env_variables()
+static bool load_env_variables()
 {
     __home_dir = __getenv(EV_HOME_DIR);
     if (__home_dir == NULL) goto error;
@@ -31,10 +31,10 @@ u8 load_env_variables()
     __config_dir = __getenv(EV_CONFIG_DIR);
     if (__config_dir == NULL) goto error;
 
-    return 0;
+    return true;
 
     error:
-    return 1;
+    return false;
 }
 
 int main(int argc, char** argv, char **envp)
