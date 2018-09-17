@@ -67,10 +67,6 @@ static char *build_config_path(char *dir)
                 return NULL;
             }
         }
-
-//        CHECK(sql3_cfg_dir_exists(dir), false, {
-//                CHECK(__mkdir(dir), (0), return NULL, CMP_NE, "%s - %d\n", strerror(errno), errno);
-//            }, CMP_E, "%s\n", "configuration directory does not exist");
     } else {
         DEBUG_PRINT(stderr, "%s - %d\n", strerror(errno), errno);
         return NULL;
@@ -96,14 +92,9 @@ bool sql3_db_exists_create(char *dir, char *db_name)
 
 	rc = sql3_cfg_create_file(full_path);
 	if (rc >= 0) {
-	    DEBUG_PRINT(stderr, "%s\n", "database fil;e created successfully");
+	    DEBUG_PRINT(stderr, "%s\n", "database file created successfully");
 	    return true;
 	}
-
-//    CHECK(access(full_path, F_OK), (-1), return true,
-//          CMP_NE, "%s\n", "database config already exists");
-//    CHECK(sql3_cfg_create_file(full_path), (0), return true,
-//            CMP_GE, "%s\n", "database file created successfully");
 
 	return false;
 }

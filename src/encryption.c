@@ -8,16 +8,14 @@ for (u32 i = 0; i < n; i++) {\
 
 void SSL_print_error()
 {
-	char *err = malloc(128);
+	char err[128];
 	ERR_load_crypto_strings();
 	ERR_error_string(ERR_get_error(), err);
 	DEBUG_PRINT(stderr, "%s\n", err);
-	free(err);
 }
 
 bool PBKDF2_HMAC_SHA_X(char* pass, u8 pass_len, unsigned char* salt, u8 salt_len, u8* hex_result)
 {
-	u32 i;
 	s32 rc;
 	unsigned char digest[PBKDF2_OUTPUT_SIZE];
 

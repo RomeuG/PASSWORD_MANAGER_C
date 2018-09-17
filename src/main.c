@@ -73,12 +73,6 @@ int main(int argc, char** argv, char **envp)
         exit(EXIT_FAILURE);
 	}
 
-	/*
-	  CHECK(sql3_db_exists_create(default_available_path, DATABASE_NAME), true, exit(EXIT_FAILURE),
-	  CMP_NE, "%s\n", "Problems creating database file...\nExiting...");
-	  CHECK(sql3_db_init(&db, default_available_path), SQLITE_OK, exit(EXIT_FAILURE),
-	  CMP_NE, "%s\n", sqlite3_errmsg(db));
-	*/
 
 	// command line options
 	while ((copts = getopt(argc, argv, "d:l:t")) != -1) {
