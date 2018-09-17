@@ -19,6 +19,10 @@
 #define EV_HOME_DIR "HOME"
 #define DATABASE_NAME "pass_shelter.db"
 
+#define NO_ARG 0
+#define REQ_ARG 1
+#define OPT_ARG 2
+
 char *__home_dir;
 char *__config_dir;
 
@@ -43,6 +47,17 @@ int main(int argc, char** argv, char **envp)
 	int copts;
 	sqlite3 *db;
 	char *default_available_path = NULL;
+
+	// setup long options
+	int long_index = 0;
+	static struct option long_options[] = {
+			{"add",    NO_ARG,  0, 'a'},
+			{"create", REQ_ARG, 0, 'c'},
+			{"delete", REQ_ARG, 0, 'd'},
+			{"list",   NO_ARG,  0, 'l'},
+			{"tests",  NO_ARG,  0, 't'},
+			{0,        0,       0, 0}
+	};
 
 	// init some ssl stuff
 	OpenSSL_add_all_algorithms();
@@ -75,7 +90,7 @@ int main(int argc, char** argv, char **envp)
 
 	// TODO convert to LONG_OPTIONS
 	// command line options
-	while ((copts = getopt(argc, argv, "a:d:l:t")) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:d:l:t", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			//add account
