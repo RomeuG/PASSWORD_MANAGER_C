@@ -18,7 +18,8 @@
 
 // TODO: should not drop table
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
-#define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
+#define SQL3_TABLE_INSERT_FORMAT_BINDING_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
+#define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES(\"%s\", \"%s\");"
 #define SQL3_TABLE_DELETE_FORMAT_STRING "DELETE FROM %s WHERE ID = %s;"
 #define SQL3_TABLE_DROP_FORMAT_STRING "DROP TABLE %s;"
 #define SQL3_TABLE_LIST_FORMAT_STRING "SELECT name FROM sqlite_master WHERE type='table'"
@@ -165,7 +166,7 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 	}
 
 	rc = sqlite3_exec(_db, query, 0, 0, NULL);
-	if(rc != SQLITE_OK) {
+	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
 		free(query);
 		return rc;
@@ -173,4 +174,29 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 
 	free(query);
 	return rc;
+}
+
+// TODO: change it to use bindings
+int sql3_table_insert(sqlite3 *_db, char *table, char *username, char *password)
+{
+    int rc;
+    char *query = NULL;
+
+    // TODO: encrypt password
+
+    rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, table, username, password);
+    if (rc <= 0) {
+        DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
+        return rc;
+    }
+
+    rc = sqlite3_exec(_db, query, 0, 0, NULL);
+    if (rc != SQLITE_OK) {
+        DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
+        free(query);
+        return rc;
+    }
+
+    free(query);
+    return rc;
 }

@@ -73,10 +73,14 @@ int main(int argc, char** argv, char **envp)
         exit(EXIT_FAILURE);
 	}
 
-
+	// TODO convert to LONG_OPTIONS
 	// command line options
-	while ((copts = getopt(argc, argv, "d:l:t")) != -1) {
+	while ((copts = getopt(argc, argv, "a:d:l:t")) != -1) {
 		switch (copts) {
+		case 'a':
+			//add account
+			sql3_table_insert(db, "table", "username", "password");
+			break;
 		case 'c':
 			sql3_table_create(db, optarg);
 			break;

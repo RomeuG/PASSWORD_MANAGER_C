@@ -26,5 +26,6 @@ int sql3_db_close(sqlite3 *_db);
 int sql3_table_create(sqlite3 *_db, char *table_name);
 int sql3_table_list(sqlite3 *_db);
 int sql3_table_delete(sqlite3 *_db, char *table_name);
+int sql3_table_insert(sqlite3 *_db, char *table, char *username, char *password);
 
 #endif
