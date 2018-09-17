@@ -165,7 +165,6 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 	}
 
 	rc = sqlite3_exec(_db, query, 0, 0, NULL);
-	rc = 1;
 	if(rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
 		free(query);
