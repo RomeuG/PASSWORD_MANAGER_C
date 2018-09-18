@@ -48,15 +48,29 @@ int main(int argc, char** argv, char **envp)
 	sqlite3 *db;
 	char *default_available_path = NULL;
 
+	// getopt_long flags
+	typedef struct {
+	    s32 add;
+	    s32 create;
+	    s32 delete;
+	    s32 list;
+        s32 username;
+        s32 password;
+        s32 tests;
+	} _getopt_flags;
+
+	static _getopt_flags _flags = {0};
 	// setup long options
 	int long_index = 0;
 	static struct option long_options[] = {
-			{"add",    NO_ARG,  0, 'a'},
-			{"create", REQ_ARG, 0, 'c'},
-			{"delete", REQ_ARG, 0, 'd'},
-			{"list",   NO_ARG,  0, 'l'},
-			{"tests",  NO_ARG,  0, 't'},
-			{0,        0,       0, 0}
+			{"add",      NO_ARG,  &_flags.add, 'a'},
+			{"create",   REQ_ARG, &_flags.create, 'c'},
+			{"delete",   REQ_ARG, &_flags.delete, 'd'},
+			{"list",     NO_ARG,  &_flags.list, 'l'},
+			{"password", REQ_ARG, &_flags.password, 'p'},
+			{"username", REQ_ARG, &_flags.username, 'u'},
+			{"tests",    NO_ARG,  &_flags.tests, 't'},
+			{0,          0,       0, 0  },
 	};
 
 	// init some ssl stuff
@@ -88,30 +102,8 @@ int main(int argc, char** argv, char **envp)
         exit(EXIT_FAILURE);
 	}
 
-	// TODO convert to LONG_OPTIONS
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:d:l:t", long_options, &long_index)) != -1) {
-		switch (copts) {
-		case 'a':
-			//add account
-			sql3_table_insert(db, "table", "username", "password");
-			break;
-		case 'c':
-			sql3_table_create(db, optarg);
-			break;
-		case 'd':
-			sql3_table_delete(db, optarg);
-			break;
-		case 'l':
-			sql3_table_list(db);
-			break;
-        case 't':
-			__tests();
-			break;
-		default:
-			exit(EXIT_FAILURE);
-		}
-	}
+	while ((copts = getopt_long(argc, argv, "a:d:p:l:t", long_options, &long_index)) != -1);
 
 	sql3_db_close(db);
 
