@@ -59,18 +59,20 @@ int main(int argc, char** argv, char **envp)
         s32 tests;
 	} _getopt_flags;
 
-	static _getopt_flags _flags = {0};
+	// arg flags
+	static _getopt_flags arg_flags = {0};
+
 	// setup long options
 	int long_index = 0;
 	static struct option long_options[] = {
-			{"add",      NO_ARG,  &_flags.add, 'a'},
-			{"create",   REQ_ARG, &_flags.create, 'c'},
-			{"delete",   REQ_ARG, &_flags.delete, 'd'},
-			{"list",     NO_ARG,  &_flags.list, 'l'},
-			{"password", REQ_ARG, &_flags.password, 'p'},
-			{"username", REQ_ARG, &_flags.username, 'u'},
-			{"tests",    NO_ARG,  &_flags.tests, 't'},
-			{0,          0,       0, 0  },
+		{"add",      NO_ARG,  &arg_flags.add,      'a'},
+		{"create",   REQ_ARG, &arg_flags.create,   'c'},
+		{"delete",   REQ_ARG, &arg_flags.delete,   'd'},
+		{"list",     NO_ARG,  &arg_flags.list,     'l'},
+		{"password", REQ_ARG, &arg_flags.password, 'p'},
+		{"username", REQ_ARG, &arg_flags.username, 'u'},
+		{"tests",    NO_ARG,  &arg_flags.tests,    't'},
+		{0,          0,       0,                    0 },
 	};
 
 	// init some ssl stuff
@@ -98,24 +100,40 @@ int main(int argc, char** argv, char **envp)
 	rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
         DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(db));
-        free(default_available_path);
+		free(default_available_path);
         exit(EXIT_FAILURE);
 	}
 
 	// command line options
 	while ((copts = getopt_long(argc, argv, "a:d:p:l:t", long_options, &long_index)) != -1) {
         switch (copts) {
-            case 'a': break;
-            case 'c': break;
-            case 'd': break;
-            case 'l': break;
-            case 'p': break;
-            case 'u': break;
-            case 't': break;
-            default:
-                exit(EXIT_FAILURE);
-        }
+            case 'a':
+            	arg_flags.add = 1;
+            	break;
+            case 'c':
+            	arg_flags.create = 1;
+            	break;
+            case 'd':
+            	arg_flags.delete = 1;
+            	break;
+            case 'l':
+            	arg_flags.list = 1;
+            	break;
+            case 'p':
+            	arg_flags.password = 1;
+            	break;
+            case 'u':
+            	arg_flags.username = 1;
+            	break;
+            case 't':
+            	arg_flags.tests = 1;
+            	break;
+			default:
+				break;
+		}
 	}
+
+	// check flags
 
 	sql3_db_close(db);
 
