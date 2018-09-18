@@ -103,7 +103,19 @@ int main(int argc, char** argv, char **envp)
 	}
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:d:p:l:t", long_options, &long_index)) != -1);
+	while ((copts = getopt_long(argc, argv, "a:d:p:l:t", long_options, &long_index)) != -1) {
+        switch (copts) {
+            case 'a': break;
+            case 'c': break;
+            case 'd': break;
+            case 'l': break;
+            case 'p': break;
+            case 'u': break;
+            case 't': break;
+            default:
+                exit(EXIT_FAILURE);
+        }
+	}
 
 	sql3_db_close(db);
 
