@@ -23,8 +23,26 @@
 #define REQ_ARG 1
 #define OPT_ARG 2
 
+#define ARGS_NONE 0
+#define ARGS_ADD 1
+#define ARGS_CREATE 2
+#define ARGS_DELETE 3
+#define ARGS_LIST 4
+#define ARGS_TESTS CHAR_MAX
+
 char *__home_dir;
 char *__config_dir;
+
+// getopt_long flags
+typedef struct {
+	s32 add;
+	s32 create;
+	s32 delete;
+	s32 list;
+	s32 username;
+	s32 password;
+	s32 tests;
+} _getopt_flags;
 
 // TODO more elegant error handling
 static bool load_env_variables()
@@ -41,26 +59,41 @@ static bool load_env_variables()
     return false;
 }
 
+u8 flags_check(_getopt_flags *flags)
+{
+	if (flags->add == 1 &&
+		flags->username == 1 &&
+		flags->password == 1) {
+		return ARGS_ADD;
+	} else if (flags->create == 1) {
+		return ARGS_CREATE;
+	} else if (flags->delete == 1) {
+		return ARGS_DELETE;
+	} else if (flags->list == 1) {
+		return ARGS_LIST;
+	} else if (flags->tests == 1) {
+		return ARGS_TESTS;
+	}
+
+	return ARGS_NONE;
+}
+
 int main(int argc, char** argv, char **envp)
 {
+	u8 res;
 	int rc;
 	int copts;
 	sqlite3 *db;
 	char *default_available_path = NULL;
 
-	// getopt_long flags
-	typedef struct {
-	    s32 add;
-	    s32 create;
-	    s32 delete;
-	    s32 list;
-        s32 username;
-        s32 password;
-        s32 tests;
-	} _getopt_flags;
-
 	// arg flags
 	static _getopt_flags arg_flags = {0};
+
+	// possible args
+	// TODO possibly put this all into a struct
+	char *args_table = NULL;
+	char *args_username = NULL;
+	char *args_password = NULL;
 
 	// setup long options
 	int long_index = 0;
@@ -105,38 +138,61 @@ int main(int argc, char** argv, char **envp)
 	}
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:d:p:l:t", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:p:lt", long_options, &long_index)) != -1) {
         switch (copts) {
-            case 'a':
-            	arg_flags.add = 1;
-            	break;
-            case 'c':
-            	arg_flags.create = 1;
-            	break;
-            case 'd':
-            	arg_flags.delete = 1;
-            	break;
-            case 'l':
-            	arg_flags.list = 1;
-            	break;
-            case 'p':
-            	arg_flags.password = 1;
-            	break;
-            case 'u':
-            	arg_flags.username = 1;
-            	break;
-            case 't':
-            	arg_flags.tests = 1;
-            	break;
-			default:
-				break;
+		case 'a':
+			arg_flags.add = 1;
+			args_table = strdup(optarg);
+			break;
+		case 'c':
+			arg_flags.create = 1;
+			args_table = strdup(optarg);
+			break;
+		case 'd':
+			// TODO
+			arg_flags.delete = 1;
+			break;
+		case 'l':
+			arg_flags.list = 1;
+			break;
+		case 'p':
+			// TODO: should be prompted
+			arg_flags.password = 1;
+			break;
+		case 'u':
+			arg_flags.username = 1;
+			args_username = strdup(optarg);
+			break;
+		case 't':
+			arg_flags.tests = 1;
+			break;
+		default:
+			break;
 		}
 	}
 
 	// check flags
+	res = flags_check(&arg_flags);
+	// TODO: lookup table?
+	switch (res) {
+	case ARGS_NONE:
+		// TODO: create function to print help
+		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
+		break;
+	case ARGS_ADD:
+		break;
+	case ARGS_CREATE:
+		break;
+	case ARGS_DELETE:
+		break;
+	case ARGS_LIST:
+		break;
+	case ARGS_TESTS:
+		__tests();
+		break;
+	}
 
 	sql3_db_close(db);
-
 	free(default_available_path);
 
     return EXIT_SUCCESS;
