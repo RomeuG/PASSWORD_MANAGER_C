@@ -39,7 +39,7 @@ bool sql3_cfg_dir_exists(char *dir)
 	DIR *_dir = opendir(dir);
 
 	if (_dir) {
-		free(_dir);
+		_FREE(_dir);
 		return true;
 	}
 
@@ -126,11 +126,11 @@ int sql3_table_create(sqlite3 *_db, char *table_name)
     rc = sqlite3_exec(_db, query, 0, 0, NULL);
 	if(rc != SQLITE_OK) {
 	    DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
-	    free(query);
+	    _FREE(query);
 	    return rc;
 	}
 
-	free(query);
+	_FREE(query);
 	return rc;
 }
 
@@ -168,11 +168,11 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 	rc = sqlite3_exec(_db, query, 0, 0, NULL);
 	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
-		free(query);
+		_FREE(query);
 		return rc;
 	}
 
-	free(query);
+	_FREE(query);
 	return rc;
 }
 
@@ -193,10 +193,10 @@ int sql3_table_insert(sqlite3 *_db, char *table, char *username, char *password)
     rc = sqlite3_exec(_db, query, 0, 0, NULL);
     if (rc != SQLITE_OK) {
         DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
-        free(query);
+        _FREE(query);
         return rc;
     }
 
-    free(query);
+    _FREE(query);
     return rc;
 }

@@ -16,7 +16,7 @@ static bool __test_pbkdf2_hmac_sha1()
         return false;
     }
 
-    free(result);
+    _FREE(result);
     return true;
 }
 
@@ -57,13 +57,13 @@ static bool __test_full_encryption_decryption()
 
 	if (strcmp(output_decryption, message) == 0) {
 		DEBUG_PRINT(stdout, "Decrypted message: %s\n", output_decryption);
-		free(key_derived);
+		_FREE(key_derived);
 		return true;
 	}
 
-	__failed__:
-	free(key_derived);
-	__failed_ret__:
+__failed__:
+	_FREE(key_derived);
+__failed_ret__:
 	return false;
 }
 

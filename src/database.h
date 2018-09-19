@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "utils.h"
 #include "defines.h"
 
 #define PATH_CONFIG_DIR 0

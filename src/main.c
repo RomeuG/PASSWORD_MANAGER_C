@@ -126,14 +126,14 @@ int main(int argc, char** argv, char **envp)
     rc = sql3_db_exists_create(default_available_path, DATABASE_NAME);
     if (!rc) {
         DEBUG_PRINT(stderr, "%s\n", "problems creating database file...\nExiting...");
-        free(default_available_path);
+        _FREE(default_available_path);
         exit(EXIT_FAILURE);
     }
 
 	rc = sql3_db_init(&db, default_available_path);
     if (rc != SQLITE_OK) {
         DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(db));
-		free(default_available_path);
+		_FREE(default_available_path);
         exit(EXIT_FAILURE);
 	}
 
@@ -193,7 +193,11 @@ int main(int argc, char** argv, char **envp)
 	}
 
 	sql3_db_close(db);
-	free(default_available_path);
+
+	_FREE(args_table);
+	_FREE(args_username);
+	_FREE(args_password);
+	_FREE(default_available_path);
 
     return EXIT_SUCCESS;
 }
