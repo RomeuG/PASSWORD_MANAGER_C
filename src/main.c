@@ -175,20 +175,24 @@ int main(int argc, char** argv, char **envp)
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
 		break;
 	case ARGS_ADD:
-		sql3_table_insert(&database);
+		rc = sql3_table_insert(&database);
 		break;
 	case ARGS_CREATE:
-		sql3_table_create(&database);
+		rc = sql3_table_create(&database);
 		break;
 	case ARGS_DELETE:
-		sql3_table_delete(&database);
+		rc = sql3_table_delete(&database);
 		break;
 	case ARGS_LIST:
-		sql3_table_list_tables(&database);
+		rc = sql3_table_list_tables(&database);
 		break;
 	case ARGS_TESTS:
 		__tests();
 		break;
+	}
+
+	if (rc != SQLITE_OK) {
+		DEBUG_PRINT(stderr, "%s\n", "An error ocurred while completing your SQL action.");
 	}
 
 	sql3_db_close(database.db_obj);
