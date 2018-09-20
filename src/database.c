@@ -62,11 +62,11 @@ static char *build_config_path(char *dir)
         strcat(dir, DIR_SEPARATOR);
         strcat(dir, DIR_HOME_CONFIG);
 
-        goto _continue;
+        goto __continue__;
 
     } else if (strcmp(dir, __config_dir) == 0) {
         // build path from $HOME/.config
-        _continue:
+	__continue__:
         strcat(dir, DIR_SEPARATOR);
         strcat(dir, DIR_DATABASE);
 
@@ -162,10 +162,10 @@ int sql3_table_list(struct db_info *database)
 	}
 
 	if (rc == SQLITE_DONE) {
-		goto finish;
+		goto __finish__;
 	}
 
-finish:
+__finish__:
 	sqlite3_finalize(stmt);
 	return rc;
 }

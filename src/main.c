@@ -48,14 +48,14 @@ struct getopt_flags {
 static bool load_env_variables()
 {
     __home_dir = __getenv(EV_HOME_DIR);
-    if (__home_dir == NULL) goto error;
+    if (__home_dir == NULL) goto __error__;
 
     __config_dir = __getenv(EV_CONFIG_DIR);
-    if (__config_dir == NULL) goto error;
+    if (__config_dir == NULL) goto __error__;
 
     return true;
 
-error:
+__error__:
     return false;
 }
 
