@@ -83,7 +83,7 @@ int main(int argc, char** argv, char **envp)
 	u8 res;
 	int rc;
 	int copts;
-	char *default_available_path = NULL;
+	//char *default_available_path = NULL;
 
 	// db struct
 	struct db_info database = {0};
@@ -115,20 +115,20 @@ int main(int argc, char** argv, char **envp)
 	}
 
     // TODO: allocate less bytes. Current = 4kb
-    default_available_path = malloc(PATH_MAX);
-    strcpy(default_available_path, __config_dir ? __config_dir : __home_dir);
+    database.config_dir = malloc(PATH_MAX);
+    strcpy(database.config_dir, __config_dir ? __config_dir : __home_dir);
 
-    rc = sql3_db_exists_create(default_available_path, DATABASE_NAME);
+    rc = sql3_db_exists_create(database.config_dir, DATABASE_NAME);
     if (!rc) {
         DEBUG_PRINT(stderr, "%s\n", "problems creating database file...\nExiting...");
-        _FREE(default_available_path);
+        _FREE(database.config_dir);
         exit(EXIT_FAILURE);
     }
 
-	rc = sql3_db_init(&database.db_obj, default_available_path);
+	rc = sql3_db_init(&database.db_obj, database.config_dir);
 	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(database.db_obj));
-		_FREE(default_available_path);
+		_FREE(database.config_dir);
 		exit(EXIT_FAILURE);
 	}
 
@@ -195,7 +195,7 @@ int main(int argc, char** argv, char **envp)
 	_FREE(database.table);
 	_FREE(database.username);
 	_FREE(database.password);
-	_FREE(default_available_path);
+	_FREE(database.config_dir);
 
     return EXIT_SUCCESS;
 }

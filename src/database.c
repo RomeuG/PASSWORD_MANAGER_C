@@ -131,11 +131,11 @@ int sql3_table_create(struct db_info *database)
 
 	rc = asprintf(&query, SQL3_TABLE_CREATE_FORMAT_STRING, database->table, database->table);
 	if (rc <= 0) {
-	    DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
-	    return rc;
+		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
+		return rc;
 	}
 
-    rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
+	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
 	if(rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
@@ -166,8 +166,8 @@ int sql3_table_list(struct db_info *database)
 	}
 
 finish:
-    sqlite3_finalize(stmt);
-    return rc;
+	sqlite3_finalize(stmt);
+	return rc;
 }
 
 int sql3_table_delete(struct db_info *database)
@@ -205,20 +205,20 @@ int sql3_table_insert(struct db_info *database)
 	NOT_NULL_OR_ABORT(database->password);
 
 	int rc;
-    char *query = NULL;
+	char *query = NULL;
 
-    // TODO: encrypt password
+	// TODO: encrypt password
 
-    rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, database->password);
-    if (rc <= 0) {
-        DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
+	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, database->password);
+	if (rc <= 0) {
+		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
         return rc;
     }
 
     rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
     if (rc != SQLITE_OK) {
-        DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
-        _FREE(query);
+		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
+		_FREE(query);
         return rc;
     }
 
