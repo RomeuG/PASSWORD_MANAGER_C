@@ -24,7 +24,6 @@ struct db_info {
 	char *table;
 	char *username;
 	char *password;
-	// TODO
 	char *config_dir;
 };
 
