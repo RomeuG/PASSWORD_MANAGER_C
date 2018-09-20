@@ -141,7 +141,7 @@ int main(int argc, char** argv, char **envp)
 	}
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:c:d:p:lt", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:plt", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
@@ -159,8 +159,8 @@ int main(int argc, char** argv, char **envp)
 			arg_flags.list = 1;
 			break;
 		case 'p':
-			// TODO: should be prompted
 			arg_flags.password = 1;
+			database.password = getpass("Insert password: ");
 			break;
 		case 'u':
 			arg_flags.username = 1;
