@@ -34,7 +34,7 @@ char *__home_dir;
 char *__config_dir;
 
 // getopt_long flags
-typedef struct {
+struct getopt_flags {
 	s32 add;
 	s32 create;
 	s32 delete;
@@ -42,7 +42,7 @@ typedef struct {
 	s32 username;
 	s32 password;
 	s32 tests;
-} _getopt_flags;
+};
 
 // TODO more elegant error handling
 static bool load_env_variables()
@@ -55,11 +55,11 @@ static bool load_env_variables()
 
     return true;
 
-    error:
+error:
     return false;
 }
 
-u8 flags_check(_getopt_flags *flags)
+u8 flags_check(struct getopt_flags *flags)
 {
 	if (flags->add == 1 &&
 		flags->username == 1 &&
@@ -87,7 +87,7 @@ int main(int argc, char** argv, char **envp)
 	char *default_available_path = NULL;
 
 	// arg flags
-	static _getopt_flags arg_flags = {0};
+	static struct getopt_flags arg_flags = {0};
 
 	// possible args
 	// TODO possibly put this all into a struct
