@@ -6,3 +6,5 @@ cmake-build-debug
 GPATH
 GRTAGS
 GTAGS
+git_name_change.sh
+.clang_complete
