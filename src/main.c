@@ -189,6 +189,9 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_TESTS:
 		__tests();
 		break;
+	default:
+		DEBUG_PRINT(stderr, "%s\n", "Invalid argument type.");
+		break;
 	}
 
 	if (rc != SQLITE_OK) {
