@@ -24,6 +24,14 @@
 #define SQL3_TABLE_DROP_FORMAT_STRING "DROP TABLE %s;"
 #define SQL3_TABLE_LIST_FORMAT_STRING "SELECT name FROM sqlite_master WHERE type='table'"
 
+#define NOT_NULL_OR_ABORT(var)					\
+	do {										\
+		if (var == NULL) {						\
+			abort();							\
+		}										\
+	} while (0)
+
+
 int __mkdir(char *dir)
 {
 	return mkdir(dir, DIR_PERMISSIONS);
@@ -112,62 +120,74 @@ int sql3_db_close(sqlite3 *_db)
     return sqlite3_close_v2(_db);
 }
 
-int sql3_table_create(sqlite3 *_db, char *table_name)
+int sql3_table_create(struct db_info *database)
 {
+	NOT_NULL_OR_ABORT(database);
+	NOT_NULL_OR_ABORT(database->db_obj);
+	NOT_NULL_OR_ABORT(database->table);
+
 	int rc;
 	char *query = NULL;
 
-	rc = asprintf(&query, SQL3_TABLE_CREATE_FORMAT_STRING, table_name, table_name);
+	rc = asprintf(&query, SQL3_TABLE_CREATE_FORMAT_STRING, database->table, database->table);
 	if (rc <= 0) {
 	    DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
 	    return rc;
 	}
 
-    rc = sqlite3_exec(_db, query, 0, 0, NULL);
+    rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
 	if(rc != SQLITE_OK) {
-	    DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
-	    _FREE(query);
-	    return rc;
+		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
+		_FREE(query);
+		return rc;
 	}
 
 	_FREE(query);
 	return rc;
 }
 
-int sql3_table_list(sqlite3 *_db)
+int sql3_table_list(struct db_info *database)
 {
+	NOT_NULL_OR_ABORT(database);
+	NOT_NULL_OR_ABORT(database->db_obj);
+	NOT_NULL_OR_ABORT(database->table);
+
 	int rc;
-    sqlite3_stmt *stmt;
+	sqlite3_stmt *stmt;
 
-    sqlite3_prepare_v2(_db, SQL3_TABLE_LIST_FORMAT_STRING, -1, &stmt, NULL);
+	sqlite3_prepare_v2(database->db_obj, SQL3_TABLE_LIST_FORMAT_STRING, -1, &stmt, NULL);
 
-    while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
-        printf("%s\n", sqlite3_column_text(stmt, 0));
-    }
+	while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+		printf("%s\n", sqlite3_column_text(stmt, 0));
+	}
 
-    if (rc == SQLITE_DONE) {
+	if (rc == SQLITE_DONE) {
 		goto finish;
-    }
+	}
 
-	finish:
+finish:
     sqlite3_finalize(stmt);
     return rc;
 }
 
-int sql3_table_delete(sqlite3 *_db, char *table_name)
+int sql3_table_delete(struct db_info *database)
 {
+	NOT_NULL_OR_ABORT(database);
+	NOT_NULL_OR_ABORT(database->db_obj);
+	NOT_NULL_OR_ABORT(database->table);
+
 	int rc;
 	char *query = NULL;
 
-	rc = asprintf(&query, SQL3_TABLE_DROP_FORMAT_STRING, table_name);
+	rc = asprintf(&query, SQL3_TABLE_DROP_FORMAT_STRING, database->table);
 	if (rc <= 0) {
 		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
 		return rc;
 	}
 
-	rc = sqlite3_exec(_db, query, 0, 0, NULL);
+	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
 	if (rc != SQLITE_OK) {
-		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
+		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
 		return rc;
 	}
@@ -177,22 +197,27 @@ int sql3_table_delete(sqlite3 *_db, char *table_name)
 }
 
 // TODO: change it to use bindings
-int sql3_table_insert(sqlite3 *_db, char *table, char *username, char *password)
+int sql3_table_insert(struct db_info *database)
 {
-    int rc;
+	NOT_NULL_OR_ABORT(database);
+	NOT_NULL_OR_ABORT(database->db_obj);
+	NOT_NULL_OR_ABORT(database->username);
+	NOT_NULL_OR_ABORT(database->password);
+
+	int rc;
     char *query = NULL;
 
     // TODO: encrypt password
 
-    rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, table, username, password);
+    rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, database->password);
     if (rc <= 0) {
         DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
         return rc;
     }
 
-    rc = sqlite3_exec(_db, query, 0, 0, NULL);
+    rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
     if (rc != SQLITE_OK) {
-        DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(_db), rc);
+        DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
         _FREE(query);
         return rc;
     }

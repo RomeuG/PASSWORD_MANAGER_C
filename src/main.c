@@ -33,14 +33,6 @@
 char *__home_dir;
 char *__config_dir;
 
-// main struct
-struct db_info {
-	sqlite3 *db_obj;
-	char *table;
-	char *username;
-	char *password;
-};
-
 // getopt_long flags
 struct getopt_flags {
 	s32 add;
@@ -185,13 +177,13 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_ADD:
 		break;
 	case ARGS_CREATE:
-		sql3_table_create(database.db_obj, "table_name");
+		sql3_table_create(&database);
 		break;
 	case ARGS_DELETE:
-		sql3_table_delete(database.db_obj, "table_name");
+		sql3_table_delete(&database);
 		break;
 	case ARGS_LIST:
-		sql3_table_list(database.db_obj);
+		sql3_table_list(&database);
 		break;
 	case ARGS_TESTS:
 		__tests();
