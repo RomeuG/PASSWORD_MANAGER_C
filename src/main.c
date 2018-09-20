@@ -33,6 +33,14 @@
 char *__home_dir;
 char *__config_dir;
 
+// main struct
+struct db_info {
+	sqlite3 *db_obj;
+	char *table;
+	char *username;
+	char *password;
+};
+
 // getopt_long flags
 struct getopt_flags {
 	s32 add;
@@ -83,17 +91,12 @@ int main(int argc, char** argv, char **envp)
 	u8 res;
 	int rc;
 	int copts;
-	sqlite3 *db;
 	char *default_available_path = NULL;
 
+	// db struct
+	struct db_info database = {0};
 	// arg flags
 	static struct getopt_flags arg_flags = {0};
-
-	// possible args
-	// TODO possibly put this all into a struct
-	char *args_table = NULL;
-	char *args_username = NULL;
-	char *args_password = NULL;
 
 	// setup long options
 	int long_index = 0;
@@ -130,23 +133,23 @@ int main(int argc, char** argv, char **envp)
         exit(EXIT_FAILURE);
     }
 
-	rc = sql3_db_init(&db, default_available_path);
-    if (rc != SQLITE_OK) {
-        DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(db));
+	rc = sql3_db_init(&database.db_obj, default_available_path);
+	if (rc != SQLITE_OK) {
+		DEBUG_PRINT(stderr, "%s\n", sqlite3_errmsg(database.db_obj));
 		_FREE(default_available_path);
-        exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE);
 	}
 
 	// command line options
 	while ((copts = getopt_long(argc, argv, "a:c:d:p:lt", long_options, &long_index)) != -1) {
-        switch (copts) {
+		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
-			args_table = strdup(optarg);
+			database.table = strdup(optarg);
 			break;
 		case 'c':
 			arg_flags.create = 1;
-			args_table = strdup(optarg);
+			database.table = strdup(optarg);
 			break;
 		case 'd':
 			// TODO
@@ -161,7 +164,7 @@ int main(int argc, char** argv, char **envp)
 			break;
 		case 'u':
 			arg_flags.username = 1;
-			args_username = strdup(optarg);
+			database.username = strdup(optarg);
 			break;
 		case 't':
 			arg_flags.tests = 1;
@@ -182,24 +185,24 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_ADD:
 		break;
 	case ARGS_CREATE:
-		sql3_table_create(db, "table_name");
+		sql3_table_create(database.db_obj, "table_name");
 		break;
 	case ARGS_DELETE:
-		sql3_table_delete(db, "table_name");
+		sql3_table_delete(database.db_obj, "table_name");
 		break;
 	case ARGS_LIST:
-		sql3_table_list(db);
+		sql3_table_list(database.db_obj);
 		break;
 	case ARGS_TESTS:
 		__tests();
 		break;
 	}
 
-	sql3_db_close(db);
+	sql3_db_close(database.db_obj);
 
-	_FREE(args_table);
-	_FREE(args_username);
-	_FREE(args_password);
+	_FREE(database.table);
+	_FREE(database.username);
+	_FREE(database.password);
 	_FREE(default_available_path);
 
     return EXIT_SUCCESS;
