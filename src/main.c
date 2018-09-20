@@ -182,10 +182,13 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_ADD:
 		break;
 	case ARGS_CREATE:
+		sql3_table_create(db, "table_name");
 		break;
 	case ARGS_DELETE:
+		sql3_table_delete(db, "table_name");
 		break;
 	case ARGS_LIST:
+		sql3_table_list(db);
 		break;
 	case ARGS_TESTS:
 		__tests();
