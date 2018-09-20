@@ -146,7 +146,7 @@ int sql3_table_create(struct db_info *database)
 	return rc;
 }
 
-int sql3_table_list(struct db_info *database)
+int sql3_table_list_tables(struct db_info *database)
 {
 	NOT_NULL_OR_ABORT(database);
 	NOT_NULL_OR_ABORT(database->db_obj);

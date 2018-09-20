@@ -184,7 +184,7 @@ int main(int argc, char** argv, char **envp)
 		sql3_table_delete(&database);
 		break;
 	case ARGS_LIST:
-		sql3_table_list(&database);
+		sql3_table_list_tables(&database);
 		break;
 	case ARGS_TESTS:
 		__tests();
