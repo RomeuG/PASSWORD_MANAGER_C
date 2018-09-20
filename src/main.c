@@ -175,6 +175,7 @@ int main(int argc, char** argv, char **envp)
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
 		break;
 	case ARGS_ADD:
+		sql3_table_insert(&database);
 		break;
 	case ARGS_CREATE:
 		sql3_table_create(&database);
