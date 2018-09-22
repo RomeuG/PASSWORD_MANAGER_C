@@ -8,3 +8,4 @@
 8. [ ] Encrypt password in table insert function
 9. [ ] Use pragma poison functionality
 10. [ ] Complete help command
+11. [ ] Function to list usernames + passwords from table

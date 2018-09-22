@@ -23,6 +23,7 @@
 #define SQL3_TABLE_DELETE_FORMAT_STRING "DELETE FROM %s WHERE ID = %s;"
 #define SQL3_TABLE_DROP_FORMAT_STRING "DROP TABLE %s;"
 #define SQL3_TABLE_LIST_FORMAT_STRING "SELECT name FROM sqlite_master WHERE type='table'"
+#define SQL3_TABLE_LIST_CONTENTS_FORMAT_STRING "SELECT * FROM %s"
 
 #define NOT_NULL_OR_ABORT(var)					\
 	do {										\
@@ -172,6 +173,32 @@ int sql3_table_list_tables(struct db_info *database)
 
 __finish__:
 	sqlite3_finalize(stmt);
+	return rc;
+}
+
+int sql3_table_list_contents(struct db_info *database)
+{
+	NOT_NULL_OR_RETURN(database);
+	NOT_NULL_OR_RETURN(database->db_obj);
+	NOT_NULL_OR_RETURN(database->table);
+
+	int rc;
+	char *query = NULL;
+
+	rc = asprintf(&query, SQL3_TABLE_LIST_CONTENTS_FORMAT_STRING, database->table);
+	if (rc <= 0) {
+		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
+		return rc;
+	}
+
+	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
+	if (rc != SQLITE_OK) {
+		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
+		_FREE(query);
+		return rc;
+	}
+
+	_FREE(query);
 	return rc;
 }
 
