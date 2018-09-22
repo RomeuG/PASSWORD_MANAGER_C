@@ -178,7 +178,6 @@ int main(int argc, char** argv, char **envp)
 	// TODO #4
 	switch (res) {
 	case ARGS_NONE:
-		// TODO #2
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
 		break;
 	case ARGS_ADD:
