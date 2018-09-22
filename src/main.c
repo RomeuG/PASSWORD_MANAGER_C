@@ -77,6 +77,12 @@ u8 flags_check(struct getopt_flags *flags)
 	return ARGS_NONE;
 }
 
+// TODO #10 - Complete help
+void print_help()
+{
+	printf("Usage:\n./program -t");
+}
+
 int main(int argc, char** argv, char **envp)
 {
 	u8 res;
@@ -144,6 +150,9 @@ int main(int argc, char** argv, char **envp)
 			break;
 		case 'd':
 			arg_flags.delete = 1;
+			break;
+		case 'h':
+			print_help();
 			break;
 		case 'l':
 			arg_flags.list = 1;
