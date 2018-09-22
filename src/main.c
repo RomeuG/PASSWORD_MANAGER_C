@@ -12,7 +12,7 @@
 
 #include "tests.h"
 
-// TODO use pragma poison
+// TODO #9
 #pragma GCC poison
 
 #define EV_CONFIG_DIR "XDG_CONFIG_HOME"
@@ -44,7 +44,6 @@ struct getopt_flags {
 	s32 tests;
 };
 
-// TODO more elegant error handling
 static bool load_env_variables()
 {
     __home_dir = __getenv(EV_HOME_DIR);
@@ -114,7 +113,7 @@ int main(int argc, char** argv, char **envp)
 		}
 	}
 
-    // TODO: allocate less bytes. Current = 4kb
+    // TODO #3
     database.config_dir = malloc(PATH_MAX);
     strcpy(database.config_dir, __config_dir ? __config_dir : __home_dir);
 
@@ -144,7 +143,6 @@ int main(int argc, char** argv, char **envp)
 			database.table = strdup(optarg);
 			break;
 		case 'd':
-			// TODO
 			arg_flags.delete = 1;
 			break;
 		case 'l':
@@ -168,10 +166,10 @@ int main(int argc, char** argv, char **envp)
 
 	// check flags
 	res = flags_check(&arg_flags);
-	// TODO: lookup table?
+	// TODO #4
 	switch (res) {
 	case ARGS_NONE:
-		// TODO: create function to print help
+		// TODO #2
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
 		break;
 	case ARGS_ADD:

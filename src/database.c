@@ -16,7 +16,7 @@
 #define DIR_PERMISSIONS 0700
 #define DIR_MAX_SIZE 512
 
-// TODO: should not drop table
+// TODO #5
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
 #define SQL3_TABLE_INSERT_FORMAT_BINDING_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
 #define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES(\"%s\", \"%s\");"
@@ -39,7 +39,7 @@ int __mkdir(char *dir)
 
 int sql3_cfg_create_file(char *full_path)
 {
-	return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, FILE_PERMISSIONS); // TODO 0666
+	return open(full_path, O_WRONLY | O_CREAT | O_NOCTTY | O_NONBLOCK, FILE_PERMISSIONS);
 }
 
 bool sql3_cfg_dir_exists(char *dir)
@@ -51,7 +51,7 @@ bool sql3_cfg_dir_exists(char *dir)
 		return true;
 	}
 
-	// TODO return errno instead of a boolean
+	// TODO #6
 	return false;
 }
 
@@ -84,7 +84,6 @@ static char *build_config_path(char *dir)
     return dir;
 }
 
-// TODO function too big, creating two things in here is too much
 bool sql3_db_exists_create(char *dir, char *db_name)
 {
     int rc;
@@ -196,7 +195,7 @@ int sql3_table_delete(struct db_info *database)
 	return rc;
 }
 
-// TODO: change it to use bindings
+// TODO #7
 int sql3_table_insert(struct db_info *database)
 {
 	NOT_NULL_OR_ABORT(database);
@@ -207,7 +206,7 @@ int sql3_table_insert(struct db_info *database)
 	int rc;
 	char *query = NULL;
 
-	// TODO: encrypt password
+	// TODO #8
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, database->password);
 	if (rc <= 0) {

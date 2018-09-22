@@ -1,0 +1,9 @@
+1. [ ] NOT_NULL_OR_ABORT actually sets result code so it can exit normally
+2. [ ] Function to print help
+3. [ ] Allocate less bytes for configuration path (currently 4kb)
+4. [ ] Probably use lookup table
+5. [ ] Do not drop table
+6. [ ] Return /errno/ instead of boolean
+7. [ ] Change table insert function to use bindings
+8. [ ] Encrypt password in table insert function
+9. [ ] Use pragma poison functionality
