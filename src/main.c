@@ -138,7 +138,7 @@ int main(int argc, char** argv, char **envp)
 	}
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:c:d:plt", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:hlpt", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
