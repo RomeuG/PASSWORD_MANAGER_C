@@ -31,6 +31,12 @@
 		}										\
 	} while (0)
 
+#define NOT_NULL_OR_RETURN(var)				\
+	do {									\
+		if (var == NULL) {					\
+			return SQLITE_ERROR;			\
+		}									\
+	} while (0)
 
 int __mkdir(char *dir)
 {
@@ -121,9 +127,9 @@ int sql3_db_close(sqlite3 *_db)
 
 int sql3_table_create(struct db_info *database)
 {
-	NOT_NULL_OR_ABORT(database);
-	NOT_NULL_OR_ABORT(database->db_obj);
-	NOT_NULL_OR_ABORT(database->table);
+	NOT_NULL_OR_RETURN(database);
+	NOT_NULL_OR_RETURN(database->db_obj);
+	NOT_NULL_OR_RETURN(database->table);
 
 	int rc;
 	char *query = NULL;
@@ -147,9 +153,9 @@ int sql3_table_create(struct db_info *database)
 
 int sql3_table_list_tables(struct db_info *database)
 {
-	NOT_NULL_OR_ABORT(database);
-	NOT_NULL_OR_ABORT(database->db_obj);
-	NOT_NULL_OR_ABORT(database->table);
+	NOT_NULL_OR_RETURN(database);
+	NOT_NULL_OR_RETURN(database->db_obj);
+	NOT_NULL_OR_RETURN(database->table);
 
 	int rc;
 	sqlite3_stmt *stmt;
@@ -171,9 +177,9 @@ __finish__:
 
 int sql3_table_delete(struct db_info *database)
 {
-	NOT_NULL_OR_ABORT(database);
-	NOT_NULL_OR_ABORT(database->db_obj);
-	NOT_NULL_OR_ABORT(database->table);
+	NOT_NULL_OR_RETURN(database);
+	NOT_NULL_OR_RETURN(database->db_obj);
+	NOT_NULL_OR_RETURN(database->table);
 
 	int rc;
 	char *query = NULL;
@@ -198,10 +204,10 @@ int sql3_table_delete(struct db_info *database)
 // TODO #7
 int sql3_table_insert(struct db_info *database)
 {
-	NOT_NULL_OR_ABORT(database);
-	NOT_NULL_OR_ABORT(database->db_obj);
-	NOT_NULL_OR_ABORT(database->username);
-	NOT_NULL_OR_ABORT(database->password);
+	NOT_NULL_OR_RETURN(database);
+	NOT_NULL_OR_RETURN(database->db_obj);
+	NOT_NULL_OR_RETURN(database->username);
+	NOT_NULL_OR_RETURN(database->password);
 
 	int rc;
 	char *query = NULL;
@@ -214,7 +220,7 @@ int sql3_table_insert(struct db_info *database)
         return rc;
     }
 
-    rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
+	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
     if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
