@@ -39,6 +39,24 @@
 		}										\
 	} while (0)
 
+// callbacks
+int sql3_table_list_contents_callback(void* not_used, int argc, char** argv, char** col_name)
+{
+	int i;
+	not_used = 0;
+
+	// TODO #12
+	for (i = 0; i < argc; i++) {
+		printf("\t%s: %s\n", col_name[i], argv[i] ? argv[i] : "NULL");
+	}
+
+	putchar('\n');
+
+	return 0;
+}
+
+
+//
 int __mkdir(char *dir)
 {
 	return mkdir(dir, DIR_PERMISSIONS);
@@ -191,7 +209,7 @@ int sql3_table_list_contents(struct db_info *database)
 		return rc;
 	}
 
-	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
+	rc = sqlite3_exec(database->db_obj, query, sql3_table_list_contents_callback, 0, NULL);
 	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
