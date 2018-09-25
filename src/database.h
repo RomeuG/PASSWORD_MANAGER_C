@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "base64.h"
 #include "utils.h"
 #include "defines.h"
 

@@ -256,22 +256,24 @@ int sql3_table_insert(struct db_info *database)
 
 	int rc;
 	char *query = NULL;
+	u8 *b64_encoded = NULL;
 
 	// TODO #8
+	b64_encoded = _b64_decode((s8*)database->password, sizeof(database->password));
 
-	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, database->password);
+	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
 	if (rc <= 0) {
 		DEBUG_PRINT(stderr, "%s - %d\n", "Error asprintf()", rc);
-        return rc;
-    }
+		return rc;
+	}
 
 	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
-    if (rc != SQLITE_OK) {
+	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
-        return rc;
-    }
+		return rc;
+	}
 
-    _FREE(query);
+	_FREE(query);
     return rc;
 }
