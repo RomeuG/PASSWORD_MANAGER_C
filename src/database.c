@@ -47,6 +47,9 @@ int sql3_table_list_contents_callback(void* not_used, int argc, char** argv, cha
 
 	// TODO #12
 	for (i = 0; i < argc; i++) {
+
+		// decode b64
+
 		printf("\t%s: %s\n", col_name[i], argv[i] ? argv[i] : "NULL");
 	}
 
@@ -256,10 +259,10 @@ int sql3_table_insert(struct db_info *database)
 
 	int rc;
 	char *query = NULL;
-	u8 *b64_encoded = NULL;
+	s8 *b64_encoded = NULL;
 
 	// TODO #8
-	b64_encoded = _b64_decode((s8*)database->password, sizeof(database->password));
+	b64_encoded = _b64_encode((u8*)database->password, sizeof(database->password));
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
 	if (rc <= 0) {
@@ -270,10 +273,12 @@ int sql3_table_insert(struct db_info *database)
 	rc = sqlite3_exec(database->db_obj, query, 0, 0, NULL);
 	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
+		_FREE(b64_encoded);
 		_FREE(query);
 		return rc;
 	}
 
+	_FREE(b64_encoded);
 	_FREE(query);
     return rc;
 }
