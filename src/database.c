@@ -259,6 +259,13 @@ int sql3_table_insert(struct db_info *database)
 	char *query = NULL;
 	s8 *b64_encoded = NULL;
 
+	// encryption stuff
+	u8 out_enc[128] = {0};
+	u8 _iv_enc[16] = {0};
+
+
+	RAND_bytes(_iv_enc, 16);
+
 	// TODO #6
 	b64_encoded = _b64_encode((u8*)database->password, sizeof(database->password));
 

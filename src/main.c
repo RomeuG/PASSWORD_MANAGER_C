@@ -83,6 +83,19 @@ void print_help()
 	printf("Usage:\n./program -t");
 }
 
+// encryption operations
+bool encryption_init(struct db_info *db)
+{
+	bool res;
+
+	db->derived_key = malloc((PBKDF2_OUTPUT_SIZE * 2) + 1);
+
+	res = PBKDF2_HMAC_SHA_X(db->password, sizeof(db->password), db->salt, PKCS5_SALT_LEN, db->derived_key);
+	if (!res) return false;
+
+	return true;
+}
+
 int main(int argc, char** argv, char **envp)
 {
 	u8 res;
@@ -136,6 +149,9 @@ int main(int argc, char** argv, char **envp)
 		_FREE(database.config_dir);
 		exit(EXIT_FAILURE);
 	}
+
+	// TODO: remove
+	memcpy(database.salt, "11111111", 8);
 
 	// command line options
 	while ((copts = getopt_long(argc, argv, "a:c:d:hlpt", long_options, &long_index)) != -1) {

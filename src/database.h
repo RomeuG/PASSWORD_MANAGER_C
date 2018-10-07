@@ -11,6 +11,7 @@
 
 #include "base64.h"
 #include "utils.h"
+#include "encryption.h"
 #include "defines.h"
 
 #define PATH_CONFIG_DIR 0
@@ -26,6 +27,9 @@ struct db_info {
 	char *username;
 	char *password;
 	char *config_dir;
+
+	char salt[8];
+	char *derived_key;
 };
 
 int __mkdir(char *dir);
