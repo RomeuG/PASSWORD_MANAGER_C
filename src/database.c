@@ -58,8 +58,6 @@ int sql3_table_list_contents_callback(void* not_used, int argc, char** argv, cha
 	return 0;
 }
 
-
-//
 int __mkdir(char *dir)
 {
 	return mkdir(dir, DIR_PERMISSIONS);
