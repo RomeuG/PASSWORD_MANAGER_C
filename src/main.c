@@ -12,7 +12,7 @@
 
 #include "tests.h"
 
-// TODO #9
+// TODO #7
 #pragma GCC poison
 
 #define EV_CONFIG_DIR "XDG_CONFIG_HOME"
@@ -77,7 +77,7 @@ u8 flags_check(struct getopt_flags *flags)
 	return ARGS_NONE;
 }
 
-// TODO #10 - Complete help
+// TODO #8
 void print_help()
 {
 	printf("Usage:\n./program -t");
@@ -119,7 +119,7 @@ int main(int argc, char** argv, char **envp)
 		}
 	}
 
-    // TODO #3
+    // TODO #1
     database.config_dir = malloc(PATH_MAX);
     strcpy(database.config_dir, __config_dir ? __config_dir : __home_dir);
 
@@ -175,7 +175,7 @@ int main(int argc, char** argv, char **envp)
 
 	// check flags
 	res = flags_check(&arg_flags);
-	// TODO #4
+	// TODO #2
 	switch (res) {
 	case ARGS_NONE:
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");

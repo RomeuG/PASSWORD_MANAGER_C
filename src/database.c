@@ -16,7 +16,7 @@
 #define DIR_PERMISSIONS 0700
 #define DIR_MAX_SIZE 512
 
-// TODO #5
+// TODO #3
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
 #define SQL3_TABLE_INSERT_FORMAT_BINDING_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
 #define SQL3_TABLE_INSERT_FORMAT_STRING "INSERT INTO %s (username, password) VALUES(\"%s\", \"%s\");"
@@ -45,11 +45,11 @@ int sql3_table_list_contents_callback(void* not_used, int argc, char** argv, cha
 	int i;
 	not_used = 0;
 
-	// TODO #12
+	// TODO #9
 	for (i = 0; i < argc; i++) {
 
 		// decode b64
-
+		u8 *b64_decoded = _b64_decode((s8*)argv[i], sizeof(argv[i]));
 		printf("\t%s: %s\n", col_name[i], argv[i] ? argv[i] : "NULL");
 	}
 
@@ -249,7 +249,7 @@ int sql3_table_delete(struct db_info *database)
 	return rc;
 }
 
-// TODO #7
+// TODO #5
 int sql3_table_insert(struct db_info *database)
 {
 	NOT_NULL_OR_RETURN(database);
@@ -261,7 +261,7 @@ int sql3_table_insert(struct db_info *database)
 	char *query = NULL;
 	s8 *b64_encoded = NULL;
 
-	// TODO #8
+	// TODO #6
 	b64_encoded = _b64_encode((u8*)database->password, sizeof(database->password));
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
