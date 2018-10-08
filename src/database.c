@@ -263,11 +263,11 @@ int sql3_table_insert(struct db_info *database)
 	u8 out_enc[128] = {0};
 	u8 _iv_enc[16] = {0};
 
-
 	RAND_bytes(_iv_enc, 16);
+	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
+	if (rc < 0) return 1;
 
-	// TODO #6
-	b64_encoded = _b64_encode((u8*)database->password, sizeof(database->password));
+	b64_encoded = _b64_encode(out_enc, sizeof(out_enc));
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
 	if (rc <= 0) {
