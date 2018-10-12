@@ -150,6 +150,8 @@ int sql3_table_create(struct db_info *database)
 	NOT_NULL_OR_RETURN(database);
 	NOT_NULL_OR_RETURN(database->db_obj);
 	NOT_NULL_OR_RETURN(database->table);
+	NOT_NULL_OR_RETURN(database->salt);
+	NOT_NULL_OR_RETURN(database->derived_key);
 
 	int rc;
 	char *query = NULL;
