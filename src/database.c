@@ -16,6 +16,8 @@
 #define DIR_PERMISSIONS 0700
 #define DIR_MAX_SIZE 512
 
+#define NULL_STR "NULL"
+
 // TODO #3
 #define SQL3_TABLE_CREATE_FORMAT_STRING "DROP TABLE IF EXISTS %s; CREATE TABLE %s (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL, password TEXT NOT NULL);"
 #define SQL3_TABLE_INSERT_FORMAT_BINDING_STRING "INSERT INTO %s (username, password) VALUES(?1, ?2);"
@@ -40,20 +42,37 @@
 	} while (0)
 
 // callbacks
-int sql3_table_list_contents_callback(void* not_used, int argc, char** argv, char** col_name)
+int sql3_table_list_contents_callback(void* database, int argc, char** argv, char** col_name)
 {
 	int i;
-	not_used = 0;
+	int rc;
+	struct db_info *_database = (struct db_info *)database;
 
-	// TODO #9
+	u8 output_decryption[128] = {0};
+	u8 _iv_dec[16] = {0};
+
+	RAND_bytes(_iv_dec, 16);
+
 	for (i = 0; i < argc; i++) {
+		if (col_name[i][0] == 'p') {
+			if (argv[i] && strcmp(argv[i], NULL_STR) == 0) {
+				u8 *b64_decoded = _b64_decode((s8*)argv[i], sizeof(argv[i]));
+				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
+				if (rc < 0) {
+					_FREE(b64_decoded);
+					return 1;
+				}
 
-		// decode b64
-		u8 *b64_decoded = _b64_decode((s8*)argv[i], sizeof(argv[i]));
-		printf("\t%s: %s\n", col_name[i], argv[i] ? argv[i] : "NULL");
+				printf("\t%s: %s\n", col_name[i], output_decryption);
+
+				_FREE(b64_decoded);
+			} else {
+				printf("\t%s: %s\n", col_name[i], NULL_STR);
+			}
+		} else {
+			printf("\t%s: %s\n", col_name[i], argv[i] ? argv[i] : NULL_STR);
+		}
 	}
-
-	putchar('\n');
 
 	return 0;
 }
@@ -212,7 +231,7 @@ int sql3_table_list_contents(struct db_info *database)
 		return rc;
 	}
 
-	rc = sqlite3_exec(database->db_obj, query, sql3_table_list_contents_callback, 0, NULL);
+	rc = sqlite3_exec(database->db_obj, query, sql3_table_list_contents_callback, database, NULL);
 	if (rc != SQLITE_OK) {
 		DEBUG_PRINT(stderr, "%s - %d\n", sqlite3_errmsg(database->db_obj), rc);
 		_FREE(query);
