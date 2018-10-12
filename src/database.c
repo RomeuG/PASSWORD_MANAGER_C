@@ -254,6 +254,8 @@ int sql3_table_insert(struct db_info *database)
 	NOT_NULL_OR_RETURN(database->db_obj);
 	NOT_NULL_OR_RETURN(database->username);
 	NOT_NULL_OR_RETURN(database->password);
+	NOT_NULL_OR_RETURN(database->salt);
+	NOT_NULL_OR_RETURN(database->derived_key);
 
 	int rc;
 	char *query = NULL;
@@ -265,7 +267,7 @@ int sql3_table_insert(struct db_info *database)
 
 	RAND_bytes(_iv_enc, 16);
 	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
-	if (rc < 0) return 1;
+	if (rc < 0) return rc;
 
 	b64_encoded = _b64_encode(out_enc, sizeof(out_enc));
 
