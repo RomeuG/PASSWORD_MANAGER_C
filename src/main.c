@@ -114,14 +114,11 @@ void print_help()
 // encryption operations
 bool encryption_init(struct db_info *db)
 {
-	bool res;
-
 	db->derived_key = malloc((PBKDF2_OUTPUT_SIZE * 2) + 1);
-
-	res = PBKDF2_HMAC_SHA_X(db->password, sizeof(db->password), db->salt, PKCS5_SALT_LEN, db->derived_key);
-	if (!res) return false;
-
-	return true;
+	return PBKDF2_HMAC_SHA_X(db->password,
+							 sizeof(db->password),
+							 db->salt, PKCS5_SALT_LEN,
+							 db->derived_key);
 }
 
 int main(int argc, char** argv, char **envp)
