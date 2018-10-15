@@ -56,10 +56,11 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 
 	for (i = 0; i < argc; i++) {
 		if (col_name[i][0] == 'p') {
-			if (argv[i] && strcmp(argv[i], NULL_STR) == 0) {
+			if (argv[i]) {
 				u8 *b64_decoded = _b64_decode((s8*)argv[i], sizeof(argv[i]));
 				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
 				if (rc < 0) {
+					DEBUG_PRINT(stderr, "%s\n", "Problems decrypting string");
 					_FREE(b64_decoded);
 					return 1;
 				}
