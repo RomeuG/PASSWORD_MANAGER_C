@@ -34,11 +34,12 @@
 		}										\
 	} while (0)
 
-#define NOT_NULL_OR_RETURN(var)					\
-	do {										\
-		if (var == NULL) {						\
-			return SQLITE_ERROR;				\
-		}										\
+#define NOT_NULL_OR_RETURN(var)							\
+	do {												\
+		if (var == NULL) {								\
+			DEBUG_PRINT(stderr, "%s is null\n", #var);	\
+			return SQLITE_ERROR;						\
+		}												\
 	} while (0)
 
 // callbacks

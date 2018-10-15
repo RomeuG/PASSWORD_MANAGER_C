@@ -48,6 +48,22 @@ struct getopt_flags {
 	s32 tests;
 };
 
+static void print_flags(struct getopt_flags *flags)
+{
+	printf("%s:%d\n%s:%d\n"
+		   "%s:%d\n%s:%d\n"
+		   "%s:%d\n%s:%d\n"
+		   "%s:%d\n%s:%d\n",
+		   "Add", flags->add,
+		   "Create", flags->create,
+		   "Delete", flags->delete,
+		   "List", flags->list,
+		   "Username", flags->username,
+		   "Password", flags->password,
+		   "Help", flags->help,
+		   "Tests", flags->tests);
+}
+
 static bool load_env_variables()
 {
     __home_dir = __getenv(EV_HOME_DIR);
@@ -155,11 +171,12 @@ int main(int argc, char** argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 
+	encryption_init(&database);
 	// TODO: remove
 	memcpy(database.salt, "11111111", 8);
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:c:d:hlpt", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:hlptu:", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
@@ -200,6 +217,7 @@ int main(int argc, char** argv, char **envp)
 	switch (res) {
 	case ARGS_NONE:
 		DEBUG_PRINT(stdout, "%s\n", "No arguments used.");
+		print_flags(&arg_flags);
 		break;
 	case ARGS_ADD:
 		rc = sql3_table_insert(&database);
@@ -234,6 +252,7 @@ int main(int argc, char** argv, char **envp)
 	_FREE(database.username);
 	_FREE(database.password);
 	_FREE(database.config_dir);
+	_FREE(database.derived_key);
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }
