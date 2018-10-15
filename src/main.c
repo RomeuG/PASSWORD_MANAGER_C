@@ -30,6 +30,7 @@
 #define ARGS_CREATE 2
 #define ARGS_DELETE 3
 #define ARGS_LIST 4
+#define ARGS_HELP 5
 #define ARGS_TESTS CHAR_MAX
 
 char *__home_dir;
@@ -43,6 +44,7 @@ struct getopt_flags {
 	s32 list;
 	s32 username;
 	s32 password;
+	s32 help;
 	s32 tests;
 };
 
@@ -72,6 +74,8 @@ u8 flags_check(struct getopt_flags *flags)
 		return ARGS_DELETE;
 	} else if (flags->list == 1) {
 		return ARGS_LIST;
+	} else if (flags->help == 1) {
+		return ARGS_HELP;
 	} else if (flags->tests == 1) {
 		return ARGS_TESTS;
 	}
@@ -82,7 +86,7 @@ u8 flags_check(struct getopt_flags *flags)
 // TODO #8
 void print_help()
 {
-	printf("Usage:\n./program -t");
+	printf("Usage:\n./program -t\n");
 }
 
 // encryption operations
@@ -169,7 +173,7 @@ int main(int argc, char** argv, char **envp)
 			arg_flags.delete = 1;
 			break;
 		case 'h':
-			print_help();
+			arg_flags.help = 1;
 			break;
 		case 'l':
 			arg_flags.list = 1;
@@ -208,6 +212,9 @@ int main(int argc, char** argv, char **envp)
 		break;
 	case ARGS_LIST:
 		rc = sql3_table_list_tables(&database);
+		break;
+	case ARGS_HELP:
+		print_help();
 		break;
 	case ARGS_TESTS:
 		__tests();
