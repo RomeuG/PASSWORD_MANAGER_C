@@ -195,7 +195,6 @@ int sql3_table_list_tables(struct db_info *database)
 {
 	NOT_NULL_OR_RETURN(database);
 	NOT_NULL_OR_RETURN(database->db_obj);
-	NOT_NULL_OR_RETURN(database->table);
 
 	int rc;
 	sqlite3_stmt *stmt;
@@ -207,6 +206,7 @@ int sql3_table_list_tables(struct db_info *database)
 	}
 
 	if (rc == SQLITE_DONE) {
+		rc = SQLITE_OK;
 		goto __finish__;
 	}
 
