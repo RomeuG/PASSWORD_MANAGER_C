@@ -29,8 +29,9 @@
 #define ARGS_ADD 1
 #define ARGS_CREATE 2
 #define ARGS_DELETE 3
-#define ARGS_LIST 4
-#define ARGS_HELP 5
+#define ARGS_LIST_TABLES 4
+#define ARGS_LIST_CONTENTS 5
+#define ARGS_HELP 6
 #define ARGS_TESTS CHAR_MAX
 
 char *__home_dir;
@@ -41,7 +42,8 @@ struct getopt_flags {
 	s32 add;
 	s32 create;
 	s32 delete;
-	s32 list;
+	s32 list_tables;
+	s32 list_contents;
 	s32 username;
 	s32 password;
 	s32 help;
@@ -53,11 +55,13 @@ static void print_flags(struct getopt_flags *flags)
 	printf("%s:%d\n%s:%d\n"
 		   "%s:%d\n%s:%d\n"
 		   "%s:%d\n%s:%d\n"
-		   "%s:%d\n%s:%d\n",
+		   "%s:%d\n%s:%d\n"
+		   "%s:%d\n",
 		   "Add", flags->add,
 		   "Create", flags->create,
 		   "Delete", flags->delete,
-		   "List", flags->list,
+		   "List Tables", flags->list_tables,
+		   "List Contents", flags->list_contents,
 		   "Username", flags->username,
 		   "Password", flags->password,
 		   "Help", flags->help,
@@ -88,8 +92,10 @@ u8 flags_check(struct getopt_flags *flags)
 		return ARGS_CREATE;
 	} else if (flags->delete == 1) {
 		return ARGS_DELETE;
-	} else if (flags->list == 1) {
-		return ARGS_LIST;
+	} else if (flags->list_tables == 1) {
+		return ARGS_LIST_TABLES;
+	} else if (flags->list_contents == 1) {
+		return ARGS_LIST_CONTENTS;
 	} else if (flags->help == 1) {
 		return ARGS_HELP;
 	} else if (flags->tests == 1) {
@@ -133,14 +139,16 @@ int main(int argc, char** argv, char **envp)
 	// setup long options
 	int long_index = 0;
 	static struct option long_options[] = {
-		{"add",      NO_ARG,  &arg_flags.add,      'a'},
-		{"create",   REQ_ARG, &arg_flags.create,   'c'},
-		{"delete",   REQ_ARG, &arg_flags.delete,   'd'},
-		{"list",     NO_ARG,  &arg_flags.list,     'l'},
-		{"password", REQ_ARG, &arg_flags.password, 'p'},
-		{"username", REQ_ARG, &arg_flags.username, 'u'},
-		{"tests",    NO_ARG,  &arg_flags.tests,    't'},
-		{0,          0,       0,                    0 },
+		{"add",           NO_ARG,  &arg_flags.add,           'a'},
+		{"create",        REQ_ARG, &arg_flags.create,        'c'},
+		{"delete",        REQ_ARG, &arg_flags.delete,        'd'},
+		{"list_tables",   NO_ARG,  &arg_flags.list_tables,   'l'},
+		{"list_contents", NO_ARG,  &arg_flags.list_contents, 'l'},
+		{"password",      REQ_ARG, &arg_flags.password,      'p'},
+		{"username",      REQ_ARG, &arg_flags.username,      'u'},
+		{"help",          NO_ARG,  &arg_flags.help,          'h'},
+		{"tests",         NO_ARG,  &arg_flags.tests,         't'},
+		{0,               0,       0,                         0 },
 	};
 
 	// init some ssl stuff
@@ -176,7 +184,7 @@ int main(int argc, char** argv, char **envp)
 	memcpy(database.salt, "11111111", 8);
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:c:d:hlptu:", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:hl:Lptu:", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
@@ -193,7 +201,11 @@ int main(int argc, char** argv, char **envp)
 			arg_flags.help = 1;
 			break;
 		case 'l':
-			arg_flags.list = 1;
+			arg_flags.list_contents = 1;
+			database.table = strdup(optarg);
+			break;
+		case 'L':
+			arg_flags.list_tables = 1;
 			break;
 		case 'p':
 			arg_flags.password = 1;
@@ -228,7 +240,10 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_DELETE:
 		rc = sql3_table_delete(&database);
 		break;
-	case ARGS_LIST:
+	case ARGS_LIST_CONTENTS:
+		rc = sql3_table_list_contents(&database);
+		break;
+	case ARGS_LIST_TABLES:
 		rc = sql3_table_list_tables(&database);
 		break;
 	case ARGS_HELP:

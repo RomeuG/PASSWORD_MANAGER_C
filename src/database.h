@@ -39,6 +39,7 @@ int sql3_db_init(sqlite3 **_db, char *db_name);
 int sql3_db_close(sqlite3 *_db);
 int sql3_table_create(struct db_info *database);
 int sql3_table_list_tables(struct db_info *database);
+int sql3_table_list_contents(struct db_info *database);
 int sql3_table_delete(struct db_info *database);
 int sql3_table_insert(struct db_info *database);
 
