@@ -19,6 +19,8 @@
 #define EV_HOME_DIR "HOME"
 #define DATABASE_NAME "pass_shelter.db"
 
+#define PATH_SIZE (1 << 10)
+
 #define NO_ARG 0
 #define REQ_ARG 1
 #define OPT_ARG 2
@@ -132,8 +134,7 @@ int main(int argc, char** argv, char **envp)
 		}
 	}
 
-    // TODO #1
-    database.config_dir = malloc(PATH_MAX);
+    database.config_dir = malloc(PATH_SIZE);
     strcpy(database.config_dir, __config_dir ? __config_dir : __home_dir);
 
     rc = sql3_db_exists_create(database.config_dir, DATABASE_NAME);
