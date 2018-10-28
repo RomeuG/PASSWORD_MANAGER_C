@@ -6,8 +6,9 @@
 
 #include "utils.h"
 #include "encryption.h"
+#include "base64.h"
 
-#define TEST_NUMBER 2
+#define TEST_NUMBER 3
 #define TEST_FUNCTION_NAME_SIZE 64
 #define OPERATOR_SIZE 3
 
@@ -57,7 +58,7 @@
 					DEBUG_PRINT(stdout, "%s successful - %lu microseconds\n", name,	\
 								(t_ending.tv_sec*MICROSECONDS+t_ending.tv_usec) - (t_beginning.tv_sec*MICROSECONDS + t_beginning.tv_usec )); \
 				} else {												\
-					__assert_fail (name, __FILE__, __LINE__, __ASSERT_FUNCTION); \
+					__assert_fail(name, __FILE__, __LINE__, __ASSERT_FUNCTION);	\
 				}														\
 			}));														\
 	} while (0)

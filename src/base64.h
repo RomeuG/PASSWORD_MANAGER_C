@@ -19,4 +19,7 @@ s8* _b64_encode (const u8 *, size_t);
 u8* _b64_decode (const s8 *, size_t);
 u8* _b64_decode_ex (const s8 *, size_t, size_t *);
 
+int Base64Encode(const unsigned char* buffer, size_t length, char** b64text);
+int Base64Decode(char* b64message, unsigned char** buffer, size_t* length);
+
 #endif

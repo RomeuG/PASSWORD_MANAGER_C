@@ -20,6 +20,22 @@ static bool __test_pbkdf2_hmac_sha1()
     return true;
 }
 
+static bool __test_base64_encode_decode()
+{
+	char* base64EncodeOutput, *text="Hello World";
+
+	Base64Encode(text, strlen(text), &base64EncodeOutput);
+	printf("Output (base64): %s\n", base64EncodeOutput);
+
+	//Decode From Base64
+	char* base64DecodeOutput;
+	size_t test;
+	Base64Decode("SGVsbG8gV29ybGQ=", &base64DecodeOutput, &test);
+	printf("Output: %s %d\n", base64DecodeOutput, test);
+
+	return true;
+}
+
 static bool __test_full_encryption_decryption()
 {
 	s32 rc;
@@ -71,6 +87,7 @@ void __tests()
 {
 	REGISTER_TEST(__test_pbkdf2_hmac_sha1, CMP_E_STR, true);
 	REGISTER_TEST(__test_full_encryption_decryption, CMP_E_STR, true);
+	REGISTER_TEST(__test_base64_encode_decode, CMP_E_STR, true);
 	ASSERT_ALL();
 
 	printf("%d out of %d tests complete!\n", successful_tests, TEST_NUMBER);
