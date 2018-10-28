@@ -30,6 +30,7 @@ struct db_info {
 
 	char salt[8];
 	char *derived_key;
+	char *master_password;
 };
 
 int __mkdir(char *dir);

@@ -115,8 +115,8 @@ void print_help()
 bool encryption_init(struct db_info *db)
 {
 	db->derived_key = malloc((PBKDF2_OUTPUT_SIZE * 2) + 1);
-	return PBKDF2_HMAC_SHA_X(db->password,
-							 sizeof(db->password),
+	return PBKDF2_HMAC_SHA_X(db->master_password,
+							 sizeof(db->master_password),
 							 db->salt, PKCS5_SALT_LEN,
 							 db->derived_key);
 }
@@ -139,7 +139,7 @@ int main(int argc, char** argv, char **envp)
 		{"add",           NO_ARG,  &arg_flags.add,           'a'},
 		{"create",        REQ_ARG, &arg_flags.create,        'c'},
 		{"delete",        REQ_ARG, &arg_flags.delete,        'd'},
-		{"list_tables",   NO_ARG,  &arg_flags.list_tables,   'l'},
+		{"list_tables",   NO_ARG,  &arg_flags.list_tables,   'L'},
 		{"list_contents", NO_ARG,  &arg_flags.list_contents, 'l'},
 		{"password",      REQ_ARG, &arg_flags.password,      'p'},
 		{"username",      REQ_ARG, &arg_flags.username,      'u'},
@@ -176,12 +176,11 @@ int main(int argc, char** argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 
-	encryption_init(&database);
 	// TODO: remove
 	memcpy(database.salt, "11111111", 8);
 
 	// command line options
-	while ((copts = getopt_long(argc, argv, "a:c:d:hl:Lptu:", long_options, &long_index)) != -1) {
+	while ((copts = getopt_long(argc, argv, "a:c:d:hl:Lp:tu:", long_options, &long_index)) != -1) {
 		switch (copts) {
 		case 'a':
 			arg_flags.add = 1;
@@ -206,7 +205,7 @@ int main(int argc, char** argv, char **envp)
 			break;
 		case 'p':
 			arg_flags.password = 1;
-			database.password = getpass("Insert password: ");
+			database.password = strdup(optarg);
 			break;
 		case 'u':
 			arg_flags.username = 1;
@@ -229,6 +228,8 @@ int main(int argc, char** argv, char **envp)
 		print_flags(&arg_flags);
 		break;
 	case ARGS_ADD:
+		database.master_password = getpass("Insert password: ");
+		encryption_init(&database);
 		rc = sql3_table_insert(&database);
 		break;
 	case ARGS_CREATE:
@@ -238,6 +239,8 @@ int main(int argc, char** argv, char **envp)
 		rc = sql3_table_delete(&database);
 		break;
 	case ARGS_LIST_CONTENTS:
+		database.master_password = getpass("Insert password: ");
+		encryption_init(&database);
 		rc = sql3_table_list_contents(&database);
 		break;
 	case ARGS_LIST_TABLES:
@@ -265,6 +268,7 @@ int main(int argc, char** argv, char **envp)
 	_FREE(database.password);
 	_FREE(database.config_dir);
 	_FREE(database.derived_key);
+	_FREE(database.master_password);
 
 	return EXIT_SUCCESS;
 }
