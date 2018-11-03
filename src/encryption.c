@@ -1,10 +1,10 @@
 #include "encryption.h"
 #include "utils.h"
 
-#define TO_HEX(src, dest, n) \
-for (u32 i = 0; i < n; i++) {\
-	sprintf(dest + (i * 2), "%02x", 255 & src[i]);\
-}
+#define TO_HEX(src, dest, n)							\
+	for (u32 i = 0; i < n; i++) {						\
+		sprintf(dest + (i * 2), "%02x", 255 & src[i]);	\
+	}
 
 void SSL_print_error()
 {

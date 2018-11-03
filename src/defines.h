@@ -48,4 +48,15 @@
 #define CMP_L_STR "<"
 #define CMP_LE_STR "<="
 
+#define PRINT_ENCRYPTED_HEX(var)				\
+	do {										\
+		if (DEBUG) {							\
+			printf(#var": ");					\
+			for (int i = 0; i < 64; i++) {		\
+				printf("%.2X", var[i]);			\
+			}									\
+			printf("\n");						\
+		}										\
+	} while (0)
+
 #endif

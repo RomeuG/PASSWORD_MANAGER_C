@@ -42,16 +42,6 @@
 		}												\
 	} while (0)
 
-#define PRINT_ENCRYPTED_HEX(var)				\
-	do {										\
-		if (DEBUG) {							\
-			for (int i = 0; i < 64; i++) {		\
-				printf("%.2X", var[i]);			\
-			}									\
-			printf("\n");						\
-		}										\
-	} while (0)
-
 // callbacks
 int sql3_table_list_contents_callback(void* database, int argc, char** argv, char** col_name)
 {
