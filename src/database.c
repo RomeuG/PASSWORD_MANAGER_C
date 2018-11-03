@@ -42,6 +42,16 @@
 		}												\
 	} while (0)
 
+#define PRINT_ENCRYPTED_HEX(var)				\
+	do {										\
+		if (DEBUG) {							\
+			for (int i = 0; i < 64; i++) {		\
+				printf("%.2X", var[i]);			\
+			}									\
+			printf("\n");						\
+		}										\
+	} while (0)
+
 // callbacks
 int sql3_table_list_contents_callback(void* database, int argc, char** argv, char** col_name)
 {
@@ -59,6 +69,8 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 			if (argv[i]) {
 				u8 *b64_decoded;
 				_b64_decode(argv[i], &b64_decoded);
+
+				PRINT_ENCRYPTED_HEX(b64_decoded);
 
 				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
 				if (rc < 0) {
@@ -293,6 +305,8 @@ int sql3_table_insert(struct db_info *database)
 	RAND_bytes(_iv_enc, 16);
 	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
 	if (rc < 0) return rc;
+
+	PRINT_ENCRYPTED_HEX(out_enc);
 
 	_b64_encode(out_enc, sizeof(out_enc), &b64_encoded);
 
