@@ -57,7 +57,9 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 	for (i = 0; i < argc; i++) {
 		if (col_name[i][0] == 'p') {
 			if (argv[i]) {
-				u8 *b64_decoded = _b64_decode((s8*)argv[i], sizeof(argv[i]));
+				u8 *b64_decoded;
+				_b64_decode(argv[i], &b64_decoded);
+
 				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
 				if (rc < 0) {
 					DEBUG_PRINT(stderr, "%s\n", "Problems decrypting string");
@@ -282,7 +284,7 @@ int sql3_table_insert(struct db_info *database)
 
 	int rc;
 	char *query = NULL;
-	s8 *b64_encoded = NULL;
+	s8 *b64_encoded;
 
 	// encryption stuff
 	u8 out_enc[128] = {0};
@@ -292,7 +294,7 @@ int sql3_table_insert(struct db_info *database)
 	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
 	if (rc < 0) return rc;
 
-	b64_encoded = _b64_encode(out_enc, sizeof(out_enc));
+	_b64_encode(out_enc, sizeof(out_enc), &b64_encoded);
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
 	if (rc <= 0) {

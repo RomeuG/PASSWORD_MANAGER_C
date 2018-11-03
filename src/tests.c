@@ -22,18 +22,18 @@ static bool __test_pbkdf2_hmac_sha1()
 
 static bool __test_base64_encode_decode()
 {
-	char* base64EncodeOutput, *text="Hello World";
+	u8 *b64_encoded;
+	u8 *b64_decoded;
+	char *text = "Hello World";
 
-	Base64Encode(text, strlen(text), &base64EncodeOutput);
-	printf("Output (base64): %s\n", base64EncodeOutput);
+	_b64_encode(text, strlen(text), &b64_encoded);
+	_b64_decode(b64_encoded, &b64_decoded);
 
-	//Decode From Base64
-	char* base64DecodeOutput;
-	size_t test;
-	Base64Decode("SGVsbG8gV29ybGQ=", &base64DecodeOutput, &test);
-	printf("Output: %s %d\n", base64DecodeOutput, test);
+	if (strcmp(text, b64_decoded) == 0) {
+		return true;
+	}
 
-	return true;
+	return false;
 }
 
 static bool __test_full_encryption_decryption()
