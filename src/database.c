@@ -52,15 +52,15 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 	u8 output_decryption[128] = {0};
 	u8 _iv_dec[16] = {0};
 
-	RAND_bytes(_iv_dec, 16);
-
 	for (i = 0; i < argc; i++) {
 		if (col_name[i][0] == 'p') {
 			if (argv[i]) {
 				u8 *b64_decoded;
 				_b64_decode(argv[i], &b64_decoded);
 
-				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
+				memcpy(_iv_dec, b64_decoded, 16);
+
+				rc = _AES_CBC_decrypt((b64_decoded+16), output_decryption, _database->derived_key, _iv_dec);
 				if (rc < 0) {
 					DEBUG_PRINT(stderr, "%s\n", "Problems decrypting string");
 					_FREE(b64_decoded);
@@ -288,13 +288,21 @@ int sql3_table_insert(struct db_info *database)
 
 	// encryption stuff
 	u8 out_enc[128] = {0};
+	u8 final_enc[256] = {0};
+
 	u8 _iv_enc[16] = {0};
+	u8 _iv_enc_original[16] = {0};
 
 	RAND_bytes(_iv_enc, 16);
+	memcpy(_iv_enc_original, _iv_enc, 16);
+
 	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
 	if (rc < 0) return rc;
 
-	_b64_encode(out_enc, sizeof(out_enc), &b64_encoded);
+	strcpy(final_enc, _iv_enc_original);
+	strcat(final_enc, out_enc);
+
+	_b64_encode(final_enc, sizeof(final_enc), &b64_encoded);
 
 	rc = asprintf(&query, SQL3_TABLE_INSERT_FORMAT_STRING, database->table, database->username, b64_encoded);
 	if (rc <= 0) {

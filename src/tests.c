@@ -72,7 +72,6 @@ static bool __test_full_encryption_decryption()
 	if (rc < 0) goto __failed__;
 
 	if (strcmp(output_decryption, message) == 0) {
-		DEBUG_PRINT(stdout, "Decrypted message: %s\n", output_decryption);
 		_FREE(key_derived);
 		return true;
 	}
