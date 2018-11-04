@@ -60,8 +60,6 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 				u8 *b64_decoded;
 				_b64_decode(argv[i], &b64_decoded);
 
-				PRINT_ENCRYPTED_HEX(b64_decoded);
-
 				rc = _AES_CBC_decrypt(b64_decoded, output_decryption, _database->derived_key, _iv_dec);
 				if (rc < 0) {
 					DEBUG_PRINT(stderr, "%s\n", "Problems decrypting string");
@@ -295,8 +293,6 @@ int sql3_table_insert(struct db_info *database)
 	RAND_bytes(_iv_enc, 16);
 	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
 	if (rc < 0) return rc;
-
-	PRINT_ENCRYPTED_HEX(out_enc);
 
 	_b64_encode(out_enc, sizeof(out_enc), &b64_encoded);
 

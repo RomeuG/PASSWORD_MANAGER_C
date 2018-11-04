@@ -231,7 +231,6 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_ADD:
 		database.master_password = getpass("Insert password: ");
 		encryption_init(&database);
-		PRINT_ENCRYPTED_HEX(database.derived_key);
 		rc = sql3_table_insert(&database);
 		break;
 	case ARGS_CREATE:
@@ -243,7 +242,6 @@ int main(int argc, char** argv, char **envp)
 	case ARGS_LIST_CONTENTS:
 		database.master_password = getpass("Insert password: ");
 		encryption_init(&database);
-		PRINT_ENCRYPTED_HEX(database.derived_key);
 		rc = sql3_table_list_contents(&database);
 		break;
 	case ARGS_LIST_TABLES:
