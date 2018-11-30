@@ -166,9 +166,6 @@ int main(int argc, char** argv, char **envp)
 		exit(EXIT_FAILURE);
 	}
 
-	// TODO: remove
-	memcpy(database.salt, "11111111", 8);
-
 	// command line options
 	while ((copts = getopt_long(argc, argv, "a:c:d:hl:Lp:tu:", long_options, &long_index)) != -1) {
 		switch (copts) {

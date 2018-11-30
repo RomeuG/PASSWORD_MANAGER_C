@@ -28,7 +28,6 @@ struct db_info {
 	char *password;
 	char *config_dir;
 
-	char salt[8];
 	char *derived_key;
 	char *master_password;
 };
