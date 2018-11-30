@@ -300,9 +300,9 @@ int sql3_table_insert(struct db_info *database)
 	u8 _iv_enc[16] = {0};
 	u8 _iv_enc_original[16] = {0};
 
-	u8 *salt = "11111111";
+	u8 salt[9] = {0};
 
-	//RAND_bytes(salt, 8);
+	RAND_bytes(salt, 8);
 	RAND_bytes(_iv_enc, 16);
 	memcpy(_iv_enc_original, _iv_enc, 16);
 
