@@ -51,25 +51,32 @@ int sql3_table_list_contents_callback(void* database, int argc, char** argv, cha
 
 	u8 output_decryption[128] = {0};
 	u8 _iv_dec[16] = {0};
+	u8 salt[8] = {0};
 
 	for (i = 0; i < argc; i++) {
 		if (col_name[i][0] == 'p') {
 			if (argv[i]) {
+				// b64 decode
 				u8 *b64_decoded;
 				_b64_decode(argv[i], &b64_decoded);
+				memcpy(salt, b64_decoded, 8); // get salt
+				memcpy(_iv_dec, (b64_decoded + 8), 16); // get IV
 
-				memcpy(_iv_dec, b64_decoded, 16);
+				char *derived_key = malloc((PBKDF2_OUTPUT_SIZE * 2) + 1);
+				PBKDF2_HMAC_SHA_X(_database->master_password, sizeof(_database->master_password), salt, PKCS5_SALT_LEN, derived_key);
 
-				rc = _AES_CBC_decrypt((b64_decoded+16), output_decryption, _database->derived_key, _iv_dec);
+				rc = _AES_CBC_decrypt((b64_decoded+24), output_decryption, derived_key, _iv_dec);
 				if (rc < 0) {
 					DEBUG_PRINT(stderr, "%s\n", "Problems decrypting string");
 					_FREE(b64_decoded);
+					_FREE(derived_key);
 					return 1;
 				}
 
 				printf("\t%s: %s\n", col_name[i], output_decryption);
 
 				_FREE(b64_decoded);
+				_FREE(derived_key);
 			} else {
 				printf("\t%s: %s\n", col_name[i], NULL_STR);
 			}
@@ -224,7 +231,7 @@ int sql3_table_list_contents(struct db_info *database)
 	NOT_NULL_OR_RETURN(database->db_obj);
 	NOT_NULL_OR_RETURN(database->table);
 	NOT_NULL_OR_RETURN(database->salt);
-	NOT_NULL_OR_RETURN(database->derived_key);
+	//NOT_NULL_OR_RETURN(database->derived_key);
 
 	int rc;
 	char *query = NULL;
@@ -279,8 +286,8 @@ int sql3_table_insert(struct db_info *database)
 	NOT_NULL_OR_RETURN(database->db_obj);
 	NOT_NULL_OR_RETURN(database->username);
 	NOT_NULL_OR_RETURN(database->password);
-	NOT_NULL_OR_RETURN(database->salt);
-	NOT_NULL_OR_RETURN(database->derived_key);
+	//NOT_NULL_OR_RETURN(database->salt);
+	//NOT_NULL_OR_RETURN(database->derived_key);
 
 	int rc;
 	char *query = NULL;
@@ -293,13 +300,20 @@ int sql3_table_insert(struct db_info *database)
 	u8 _iv_enc[16] = {0};
 	u8 _iv_enc_original[16] = {0};
 
+	u8 *salt = "11111111";
+
+	//RAND_bytes(salt, 8);
 	RAND_bytes(_iv_enc, 16);
 	memcpy(_iv_enc_original, _iv_enc, 16);
 
-	rc = _AES_CBC_encrypt(database->password, out_enc, database->derived_key, _iv_enc);
+	char *derived_key = malloc((PBKDF2_OUTPUT_SIZE * 2) + 1);
+	PBKDF2_HMAC_SHA_X(database->master_password, sizeof(database->master_password), salt, PKCS5_SALT_LEN, derived_key);
+
+	rc = _AES_CBC_encrypt(database->password, out_enc, derived_key, _iv_enc);
 	if (rc < 0) return rc;
 
-	strcpy(final_enc, _iv_enc_original);
+	strcpy(final_enc, salt);
+	strcat(final_enc, _iv_enc_original);
 	strcat(final_enc, out_enc);
 
 	_b64_encode(final_enc, sizeof(final_enc), &b64_encoded);
